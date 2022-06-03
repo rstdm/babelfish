@@ -36,4 +36,4 @@ hello:
     - cd deploy
     - mo hello-dep.yaml | kubectl delete -f - || true
     - mo hello-dep.yaml | kubectl apply -f -
-    - mo hello-svc.yaml | kubectl apply -f -
+    - mo hello-svc.yaml | kubectl apply -f -
