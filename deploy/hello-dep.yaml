@@ -17,7 +17,7 @@ spec:
       imagePullSecrets: [{"name": "gitlab-registry-{{ CI_PROJECT_ID }}"}]
       containers:
       - name: hello
-        image: "{{ CI_REGISTRY_IMAGE }}/prime:latest"
+        image: "{{ CI_REGISTRY_IMAGE }}/hello:latest"
         ports:
         - containerPort: 5000
         resources:
