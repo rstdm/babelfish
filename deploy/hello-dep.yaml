@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello
+  labels:
+    app: hello
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+    spec:
+      imagePullSecrets: [{"name": "gitlab-registry-{{ CI_PROJECT_ID }}-credentials"}]
+      containers:
+      - name: hello
+        image: "{{ CI_REGISTRY_IMAGE }}/prime:latest"
+        ports:
+        - containerPort: 5000
+        resources:
+            limits:
+                cpu: 50m
+                memory: 100Mi
+            requests:
+                cpu: 25m
+                memory: 50Mi
