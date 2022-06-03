@@ -14,7 +14,7 @@ spec:
       labels:
         app: hello
     spec:
-      imagePullSecrets: [{"name": "gitlab-registry-{{ CI_PROJECT_ID }}-credentials"}]
+      imagePullSecrets: [{"name": "gitlab-registry-{{ CI_PROJECT_ID }}"}]
       containers:
       - name: hello
         image: "{{ CI_REGISTRY_IMAGE }}/prime:latest"
