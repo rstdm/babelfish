@@ -11,7 +11,7 @@ Already a pro? Just edit this README.md and make it your own.
 ## Where do you find what?
 
 - `.gitlab-ci.yaml`: The deployment pipeline composed of `prepare`, `build` and `deployment` stages.
-- `deploy/`: K8s manifest files that deploy an nginx server and a self-hosted Hello World Flask App.
+- `deploy/`: K8s manifest files that deploy an out-of-the-box nginx server and a containerized Hello World Flask App.
 - `hello/`: A simple Hello World Python App (Flask-based). Take this as a base camp for own projects.
 
 ## Deploy
