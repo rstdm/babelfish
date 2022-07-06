@@ -17,7 +17,6 @@ secrets:
 hello-img:
     stage: build
     image: docker:stable
-    services: ["docker:dind"]
     script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE/hello:latest hello/
