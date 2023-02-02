@@ -1,4 +1,6 @@
 const textInput = document.getElementById("text-input")
+const translationOutput = document.getElementById("translation-output")
+
 textInput.oninput = onTextChange;
 
 let cachedSentences = new Map();
@@ -48,19 +50,32 @@ function getInputSentences() {
 }
 
 function updateOutput() {
-    const result = []
+    const spans = []
 
     const sentenceEntries = getInputSentences();
+
+    let insertLoadingSpan = true;
     for (const sentenceEntry of sentenceEntries) {
+        const span = document.createElement('span')
         const translation = getCachedSentence(sentenceEntry.sentence, "en", "de") // todo
         if (translation === undefined || translation === null) {
-            result.push("(((lädt)))")
+            if (insertLoadingSpan) {
+                span.innerHTML = "<i>Lädt...</i> "
+                insertLoadingSpan = false;
+            }
         } else {
-            result.push(translation)
+            span.innerText = translation + " "
+            insertLoadingSpan = true;
         }
+
+        spans.push(span)
     }
 
-    console.log(result.join(" "))
+    while (translationOutput.lastElementChild) {
+        translationOutput.removeChild(translationOutput.lastElementChild);
+    }
+    spans.forEach(span => translationOutput.appendChild(span))
+
 }
 
 function getCachedSentence(srcSentence, srcLang, dstLang) {
@@ -84,7 +99,6 @@ async function translateSentence(sentence, srcLang, dstLang) {
     }
     setCachedSentence(sentence, null, srcLang, dstLang)
 
-    console.log("translating", sentence)
     await new Promise(r => setTimeout(r, 2000)); // TODO remove "sleep"
 
     const translatedSentence = sentence;
