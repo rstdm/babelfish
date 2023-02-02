@@ -8,10 +8,6 @@ let cachedSentences = new Map();
 function onTextChange() {
     const inputSentenceEntries = getInputSentences();
     for (const sentenceEntry of inputSentenceEntries) {
-        if (sentenceEntry.sentence === "") {
-            continue
-        }
-
         if (!sentenceEntry.edited) {
             translateSentence(sentenceEntry.sentence, "en", "de")
             continue
@@ -34,6 +30,10 @@ function getInputSentences() {
     let match;
     while (match = re.exec(text)) {
         const sentence = match[0].trim();
+        if (sentence === "") {
+            continue
+        }
+
         const sentenceStart = match.indices[0][0];
         const sentenceEnd = match.indices[0][1];
 
