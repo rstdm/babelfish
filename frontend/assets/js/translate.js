@@ -29,7 +29,7 @@ function getInputSentences() {
     const result = []
     let match;
     while (match = re.exec(text)) {
-        const sentence = match[0].trim();
+        const sentence = match[0];
         if (sentence === "") {
             continue
         }
