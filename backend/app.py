@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
-from backend.language import Language
+from language import Language
+from translate import translate
 
 app = FastAPI()
 
@@ -33,4 +34,5 @@ class TranslateResponsePayload(BaseModel):
                       "workers."
           )
 def read_item(request_payload: TranslateRequestPayload) -> TranslateResponsePayload:
-    return TranslateResponsePayload(translatedText=request_payload.sourceText)
+    translated_text = translate(request_payload.sourceLanguage, request_payload.destinationLanguage, request_payload.sourceText)
+    return TranslateResponsePayload(translatedText=translated_text)
