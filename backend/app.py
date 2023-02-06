@@ -1,28 +1,15 @@
-import os
-from flask import Flask
+from typing import Union
 
-PORT = int(os.environ.get("PORT", "5000"))
+from fastapi import FastAPI
 
-app = Flask(__name__)
+app = FastAPI()
 
-greets = {
-    "nl" : "Hello wereld",
-    "en" : "Hello world",
-    "fr" : "Bonjour monde",
-    "de" : "Hallo Welt",
-    "it" : "Ciao mondo",
-    "pt" : "Olá mundo",
-    "es" : "Hola mundo"
-}
 
-@app.route("/", methods=["GET"])
-def index():
-    return greets['de']
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
 
-@app.route("/greet/<lang>", methods=["GET"])
-def get_greet(lang):
-    if lang not in greets:
-        return f"{ lang } not found", 404
-    return greets[lang]
 
-app.run(host="0.0.0.0", port=PORT)
+@app.get("/items/{item_id}")
+def read_item(item_id: int, q: Union[str, None] = None):
+    return {"item_id": item_id, "q": q}
