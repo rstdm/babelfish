@@ -1,3 +1,15 @@
+# We can't use python:3.10-alpine because alpine linux is based on musl. However, the precompiled
+# binaries for pytorch, numpy, sentencepiece and tokenizers are not available for musl. Compiling them
+# during the docker build will increase the build time significantly.
+#
+# Commit 7a58b4b3d8bce6e1b53649b464c8581cce98ef49 contains a dockerfile with alpine linux which compiles
+# numpy, sentencepiece (both c / c++) and tokenizers (rust). It takes about 15 minutes to build the image.
+# No attemt was made to compile pytorch.
+#
+# Using python-slim instead of python-alpine increases the image size by about 100 MB. However, the total
+# image size is about 3GB due to the immense size of pytorch (~1GB) and the deep learning model (~2GB). Adding
+# 100MB more doesn't make much of a difference.
+
 FROM python:3.10-slim AS build
 
 WORKDIR /app
