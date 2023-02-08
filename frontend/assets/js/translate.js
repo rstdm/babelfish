@@ -128,7 +128,7 @@ function populateLanguageSelect(select) {
     divider.innerText = "──────────"
     select.appendChild(divider)
 
-    const sortedLanguages = [...languageCodes.entries()].sort((a, b) => b[1] - a[1])
+    const sortedLanguages = [...languageCodes.entries()].sort((a, b) => a[1].localeCompare(b[1]))
     for (const entry of sortedLanguages) {
         addOptionToSelect(select, entry[0], entry[1])
     }
