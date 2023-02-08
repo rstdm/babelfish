@@ -108,6 +108,8 @@ const sourceLanguageSelect = document.getElementById("source-language-select")
 const destinationLanguageSelect = document.getElementById("destination-language-select")
 populateLanguageSelect(sourceLanguageSelect)
 populateLanguageSelect(destinationLanguageSelect)
+sourceLanguageSelect.onchange = onLanguageChange
+destinationLanguageSelect.onchange = onLanguageChange
 
 const textInput = document.getElementById("text-input")
 textInput.oninput = onTextChange;
@@ -143,13 +145,21 @@ function onTextChange() {
     const inputSentenceEntries = getInputSentences();
     for (const sentenceEntry of inputSentenceEntries) {
         if (!sentenceEntry.edited) {
-            translateSentence(sentenceEntry.sentence, "en", "de")
+            translateSentence(sentenceEntry.sentence, sourceLanguageSelect.value, destinationLanguageSelect.value)
             continue
         }
 
         debounce(function () {
-            translateSentence(sentenceEntry.sentence, "en", "de")
+            translateSentence(sentenceEntry.sentence, sourceLanguageSelect.value, destinationLanguageSelect.value)
         }, 2000)
+    }
+    updateOutput()
+}
+
+function onLanguageChange() {
+    const inputSentenceEntries = getInputSentences();
+    for (const sentenceEntry of inputSentenceEntries) {
+        translateSentence(sentenceEntry.sentence, sourceLanguageSelect.value, destinationLanguageSelect.value)
     }
     updateOutput()
 }
@@ -191,7 +201,7 @@ function updateOutput() {
     let insertLoadingSpan = true;
     for (const sentenceEntry of sentenceEntries) {
         const span = document.createElement('span')
-        const translation = getCachedSentence(sentenceEntry.sentence, "en", "de") // todo
+        const translation = getCachedSentence(sentenceEntry.sentence, sourceLanguageSelect.value, destinationLanguageSelect.value)
         if (translation === undefined || translation === null) {
             if (insertLoadingSpan) {
                 span.innerHTML = " <i>Lädt...</i>"
