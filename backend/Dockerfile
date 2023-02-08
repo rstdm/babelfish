@@ -7,8 +7,13 @@ ENV TRANSFORMERS_CACHE=/transformer-cache
 RUN groupadd -r pythonuser && useradd -r -g pythonuser pythonuser
 
 ADD requirements.txt download_model.py ./
-RUN pip3 install --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
-RUN python3 download_model.py
+
+# download dependencies and model. PYTHONDONTWRITEBYTECODE tells the python interpreter not to create
+# pycache files.
+RUN export PYTHONDONTWRITEBYTECODE=1 && \
+    pip3 install --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+RUN export export PYTHONDONTWRITEBYTECODE=1 &&  \
+    python3 download_model.py
 
 USER pythonuser
 
