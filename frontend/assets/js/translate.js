@@ -142,18 +142,28 @@ function addOptionToSelect(select, value, text) {
     select.appendChild(option)
 }
 
+function getSourceLanguage(){
+    return sourceLanguageSelect.value
+}
+
+function getDestinationLanguage(){
+    return destinationLanguageSelect.value
+}
+
 // onInput is called after every key press. The currently edited sentence is therefore constantly changing and shouldn't
 // be translated. The current sentence is only translated if the user stops typing.
 function onInput() {
+    const sourceLang = getSourceLanguage()
+    const destLang = getDestinationLanguage()
     const inputSentenceEntries = getInputSentences();
     for (const sentenceEntry of inputSentenceEntries) {
         if (!sentenceEntry.edited) {
-            translateSentence(sentenceEntry.sentence, sourceLanguageSelect.value, destinationLanguageSelect.value)
+            translateSentence(sentenceEntry.sentence, sourceLang, destLang)
             continue
         }
 
         debounce(function () {
-            translateSentence(sentenceEntry.sentence, sourceLanguageSelect.value, destinationLanguageSelect.value)
+            translateSentence(sentenceEntry.sentence, sourceLang, destLang)
         }, 2000)
     }
     updateOutput()
@@ -162,9 +172,11 @@ function onInput() {
 // onChange is called if the user is done editing. This happens 1) if the user selects a language or 2) if the cursor
 // leaves the text input. In any case the whole text should be translated.
 function onChange() {
+    const sourceLang = getSourceLanguage()
+    const destLang = getDestinationLanguage()
     const inputSentenceEntries = getInputSentences();
     for (const sentenceEntry of inputSentenceEntries) {
-        translateSentence(sentenceEntry.sentence, sourceLanguageSelect.value, destinationLanguageSelect.value)
+        translateSentence(sentenceEntry.sentence, sourceLang, destLang)
     }
     updateOutput()
 }
@@ -206,7 +218,7 @@ function updateOutput() {
     let insertLoadingSpan = true;
     for (const sentenceEntry of sentenceEntries) {
         const span = document.createElement('span')
-        const translation = getCachedSentence(sentenceEntry.sentence, sourceLanguageSelect.value, destinationLanguageSelect.value)
+        const translation = getCachedSentence(sentenceEntry.sentence, getSourceLanguage(), getDestinationLanguage())
         if (translation === undefined || translation === null) {
             if (insertLoadingSpan) {
                 span.innerHTML = " <i>Lädt...</i>"
