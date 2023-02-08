@@ -6,8 +6,9 @@ from language import Language
 
 # load model and tokenizer. The required data must be present in the model or tokenizer directory. The data can be
 # downloaded by executing download_model.py
-model = M2M100ForConditionalGeneration.from_pretrained("model")
-tokenizer = M2M100Tokenizer.from_pretrained("tokenizer")
+repo = "facebook/m2m100_418M"
+model = M2M100ForConditionalGeneration.from_pretrained(repo)
+tokenizer = M2M100Tokenizer.from_pretrained(repo)
 
 # translating text is very cpu intensive (100% CPU utilization). Therefore, running multiple requests in parallel does
 # not improve performance. This mutex ensures that only one translation is performed at a time.

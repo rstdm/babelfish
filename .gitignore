@@ -1,5 +1,2 @@
 .idea
 __pycache__
-
-backend/model
-backend/tokenizer
