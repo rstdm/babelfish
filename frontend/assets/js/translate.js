@@ -108,11 +108,12 @@ const sourceLanguageSelect = document.getElementById("source-language-select")
 const destinationLanguageSelect = document.getElementById("destination-language-select")
 populateLanguageSelect(sourceLanguageSelect)
 populateLanguageSelect(destinationLanguageSelect)
-sourceLanguageSelect.onchange = onLanguageChange
-destinationLanguageSelect.onchange = onLanguageChange
+sourceLanguageSelect.onchange = onChange
+destinationLanguageSelect.onchange = onChange
 
 const textInput = document.getElementById("text-input")
-textInput.oninput = onTextChange;
+textInput.oninput = onInput;
+textInput.onchange = onChange;
 
 const translationOutput = document.getElementById("translation-output")
 
@@ -141,7 +142,9 @@ function addOptionToSelect(select, value, text) {
     select.appendChild(option)
 }
 
-function onTextChange() {
+// onInput is called after every key press. The currently edited sentence is therefore constantly changing and shouldn't
+// be translated. The current sentence is only translated if the user stops typing.
+function onInput() {
     const inputSentenceEntries = getInputSentences();
     for (const sentenceEntry of inputSentenceEntries) {
         if (!sentenceEntry.edited) {
@@ -156,7 +159,9 @@ function onTextChange() {
     updateOutput()
 }
 
-function onLanguageChange() {
+// onChange is called if the user is done editing. This happens 1) if the user selects a language or 2) if the cursor
+// leaves the text input. In any case the whole text should be translated.
+function onChange() {
     const inputSentenceEntries = getInputSentences();
     for (const sentenceEntry of inputSentenceEntries) {
         translateSentence(sentenceEntry.sentence, sourceLanguageSelect.value, destinationLanguageSelect.value)
