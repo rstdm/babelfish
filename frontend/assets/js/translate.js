@@ -1,9 +1,143 @@
-const textInput = document.getElementById("text-input")
-const translationOutput = document.getElementById("translation-output")
-
-textInput.oninput = onTextChange;
+const importantLanguages = ["de", "en", "fr", "it", "pt", "es"]
+const languageCodes = new Map(Object.entries({
+    "af": "Afrikaans",
+    "am": "Amharisch",
+    "ar": "Arabisch",
+    "ast": "Asturisch",
+    "az": "Aserbaidschanisch",
+    "ba": "Baschkirisch",
+    "be": "Belarussisch",
+    "bg": "Bulgarisch",
+    "bn": "Bengalisch",
+    "br": "Bretonisch",
+    "bs": "Bosnisch",
+    "ca": "Katalanisch",
+    "ceb": "Cebuano",
+    "cs": "Tschechisch",
+    "cy": "Walisisch",
+    "da": "Dänisch",
+    "de": "Deutsch",
+    "el": "Griechisch",
+    "en": "Englisch",
+    "es": "Spanisch",
+    "et": "Estnisch",
+    "fa": "Persisch",
+    "ff": "Fulfulde",
+    "fi": "Finnisch",
+    "fr": "Französisch",
+    "fy": "Westfriesisch",
+    "ga": "Irisch",
+    "gd": "Schottisch-gälisch",
+    "gl": "Galicisch",
+    "gu": "Gujarati",
+    "ha": "Hausa",
+    "he": "Hebräisch",
+    "hi": "Hindi",
+    "hr": "Kroatisch",
+    "ht": "Haitianisch",
+    "hu": "Ungarisch",
+    "hy": "Armenisch",
+    "id": "Indonesisch",
+    "ig": "Igbo",
+    "ilo": "Ilokano",
+    "is": "Isländisch",
+    "it": "Italienisch",
+    "ja": "Japanisch",
+    "jv": "Javanisch",
+    "ka": "Georgisch",
+    "kk": "Kasachisch",
+    "km": "Khmer",
+    "kn": "Kannada",
+    "ko": "Koreanisch",
+    "lb": "Luxemburgisch",
+    "lg": "Luganda",
+    "ln": "Lingála",
+    "lo": "Laotisch",
+    "lt": "Litauisch",
+    "lv": "Lettisch",
+    "mg": "Malagasy",
+    "mk": "Mazedonisch",
+    "ml": "Malayalam",
+    "mn": "Mongolisch",
+    "mr": "Marathi",
+    "ms": "Malaiisch",
+    "my": "Birmanisch",
+    "ne": "Nepali",
+    "nl": "Niederländisch",
+    "no": "Norwegisch",
+    "ns": "Nord-Sotho",
+    "oc": "Okzitanisch",
+    "or": "Oriya",
+    "pa": "Panjabi",
+    "pl": "Polnisch",
+    "ps": "Paschtunisch",
+    "pt": "Portugiesisch",
+    "ro": "Rumänisch",
+    "ru": "Russisch",
+    "sd": "Sindhi",
+    "si": "Singhalesisch",
+    "sk": "Slowakisch",
+    "sl": "Slowenisch",
+    "so": "Somali",
+    "sq": "Albanisch",
+    "sr": "Serbisch",
+    "ss": "Siswati",
+    "su": "Sundanesisch",
+    "sv": "Schwedisch",
+    "sw": "Swahili",
+    "ta": "Tamil",
+    "th": "Thai",
+    "tl": "Tagalog",
+    "tn": "Setswana",
+    "tr": "Türkisch",
+    "uk": "Ukrainisch",
+    "ur": "Urdu",
+    "uz": "Usbekisch",
+    "vi": "Vietnamesisch",
+    "wo": "Wolof",
+    "xh": "isiXhosa",
+    "yi": "Jiddisch",
+    "yo": "Yoruba",
+    "zh": "Chinesisch",
+    "zu": "isiZulu",
+}))
 
 let cachedSentences = new Map();
+
+const sourceLanguageSelect = document.getElementById("source-language-select")
+const destinationLanguageSelect = document.getElementById("destination-language-select")
+populateLanguageSelect(sourceLanguageSelect)
+populateLanguageSelect(destinationLanguageSelect)
+
+const textInput = document.getElementById("text-input")
+textInput.oninput = onTextChange;
+
+const translationOutput = document.getElementById("translation-output")
+
+function populateLanguageSelect(select) {
+    for (const importantLanguage of importantLanguages) {
+        addOptionToSelect(select, importantLanguage, languageCodes.get(importantLanguage))
+    }
+
+    // https://stackoverflow.com/questions/899148/html-select-option-separator
+    const divider = document.createElement('option')
+    divider.disabled = true
+    divider.innerText = "──────────"
+    select.appendChild(divider)
+
+    const sortedLanguages = [...languageCodes.entries()].sort((a, b) => b[1] - a[1])
+    for (const entry of sortedLanguages) {
+        addOptionToSelect(select, entry[0], entry[1])
+    }
+}
+
+function addOptionToSelect(select, value, text) {
+    const option = document.createElement('option')
+    option.innerText = text
+    option.value = value
+
+    select.appendChild(option)
+}
 
 function onTextChange() {
     const inputSentenceEntries = getInputSentences();
@@ -113,7 +247,7 @@ async function translateSentence(sentence, srcLang, dstLang) {
         body: JSON.stringify(requestBody),
     });
 
-    if (response.status !== 200){
+    if (response.status !== 200) {
         const errorMessage = "Failed to retrieve translation from the server. URL: " + response.url +
             " Status: " + response.status + " Response Body: " + await response.text();
         throw new Error(errorMessage)
