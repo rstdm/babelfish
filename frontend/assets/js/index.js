@@ -22,6 +22,7 @@ textInput.onchange = onChange;
 function onInput() {
     const sourceLang = getSourceLanguage()
     if (sourceLang === "") {
+        displayLanguageSelectHint()
         return
     }
 
@@ -45,6 +46,7 @@ function onInput() {
 function onChange() {
     const sourceLang = getSourceLanguage()
     if (sourceLang === "") {
+        displayLanguageSelectHint()
         return
     }
 
@@ -85,6 +87,7 @@ function getInputSentences() {
 function updateOutput() {
     const sourceLang = getSourceLanguage()
     if (sourceLang === "") {
+        displayLanguageSelectHint()
         return
     }
 
@@ -111,14 +114,33 @@ function updateOutput() {
     }
 
     // remove old spans
-    while (translationOutput.lastElementChild) {
-        translationOutput.removeChild(translationOutput.lastElementChild);
-    }
+    removeAllChildren(translationOutput)
 
     // insert new spans
     spans.forEach(span => translationOutput.appendChild(span))
 
 }
+
+function removeAllChildren(element) {
+    while (element.lastElementChild) {
+        element.removeChild(element.lastElementChild);
+    }
+}
+
+function displayLanguageSelectHint(){
+    removeAllChildren(translationOutput)
+
+    // This message should only be displayed if the user already entered some text
+    if (textInput.value.length == 0){
+        return;
+    }
+
+    const span = document.createElement('span')
+    span.innerHTML = " <i>Bitte wählen Sie die Sprache aus, in der Sie ihren Text verfasst haben. Alternativ können " +
+        "Sie noch mehr Text eingeben. Die Sprache wird dann automatisch erkannt.</i>"
+    translationOutput.appendChild(span)
+}
+
 
 export {updateOutput}
 
