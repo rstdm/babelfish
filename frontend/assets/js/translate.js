@@ -1,106 +1,10 @@
 const importantLanguages = ["de", "en", "fr", "it", "pt", "es"]
-const languageCodes = new Map(Object.entries({
-    "af": "Afrikaans",
-    "am": "Amharisch",
-    "ar": "Arabisch",
-    "ast": "Asturisch",
-    "az": "Aserbaidschanisch",
-    "ba": "Baschkirisch",
-    "be": "Belarussisch",
-    "bg": "Bulgarisch",
-    "bn": "Bengalisch",
-    "br": "Bretonisch",
-    "bs": "Bosnisch",
-    "ca": "Katalanisch",
-    "ceb": "Cebuano",
-    "cs": "Tschechisch",
-    "cy": "Walisisch",
-    "da": "Dänisch",
-    "de": "Deutsch",
-    "el": "Griechisch",
-    "en": "Englisch",
-    "es": "Spanisch",
-    "et": "Estnisch",
-    "fa": "Persisch",
-    "ff": "Fulfulde",
-    "fi": "Finnisch",
-    "fr": "Französisch",
-    "fy": "Westfriesisch",
-    "ga": "Irisch",
-    "gd": "Schottisch-gälisch",
-    "gl": "Galicisch",
-    "gu": "Gujarati",
-    "ha": "Hausa",
-    "he": "Hebräisch",
-    "hi": "Hindi",
-    "hr": "Kroatisch",
-    "ht": "Haitianisch",
-    "hu": "Ungarisch",
-    "hy": "Armenisch",
-    "id": "Indonesisch",
-    "ig": "Igbo",
-    "ilo": "Ilokano",
-    "is": "Isländisch",
-    "it": "Italienisch",
-    "ja": "Japanisch",
-    "jv": "Javanisch",
-    "ka": "Georgisch",
-    "kk": "Kasachisch",
-    "km": "Khmer",
-    "kn": "Kannada",
-    "ko": "Koreanisch",
-    "lb": "Luxemburgisch",
-    "lg": "Luganda",
-    "ln": "Lingála",
-    "lo": "Laotisch",
-    "lt": "Litauisch",
-    "lv": "Lettisch",
-    "mg": "Malagasy",
-    "mk": "Mazedonisch",
-    "ml": "Malayalam",
-    "mn": "Mongolisch",
-    "mr": "Marathi",
-    "ms": "Malaiisch",
-    "my": "Birmanisch",
-    "ne": "Nepali",
-    "nl": "Niederländisch",
-    "no": "Norwegisch",
-    "ns": "Nord-Sotho",
-    "oc": "Okzitanisch",
-    "or": "Oriya",
-    "pa": "Panjabi",
-    "pl": "Polnisch",
-    "ps": "Paschtunisch",
-    "pt": "Portugiesisch",
-    "ro": "Rumänisch",
-    "ru": "Russisch",
-    "sd": "Sindhi",
-    "si": "Singhalesisch",
-    "sk": "Slowakisch",
-    "sl": "Slowenisch",
-    "so": "Somali",
-    "sq": "Albanisch",
-    "sr": "Serbisch",
-    "ss": "Siswati",
-    "su": "Sundanesisch",
-    "sv": "Schwedisch",
-    "sw": "Swahili",
-    "ta": "Tamil",
-    "th": "Thai",
-    "tl": "Tagalog",
-    "tn": "Setswana",
-    "tr": "Türkisch",
-    "uk": "Ukrainisch",
-    "ur": "Urdu",
-    "uz": "Usbekisch",
-    "vi": "Vietnamesisch",
-    "wo": "Wolof",
-    "xh": "isiXhosa",
-    "yi": "Jiddisch",
-    "yo": "Yoruba",
-    "zh": "Chinesisch",
-    "zu": "isiZulu",
-}))
+const supportedLanguages = ["af", "am", "ar", "ast", "az", "ba", "be", "bg", "bn", "br", "bs", "ca", "ceb", "cs", "cy",
+    "da", "de", "el", "en", "es", "et", "fa", "ff", "fi", "fr", "fy", "ga", "gd", "gl", "gu", "ha", "he", "hi", "hr",
+    "ht", "hu", "hy", "id", "ig", "ilo", "is", "it", "ja", "jv", "ka", "kk", "km", "kn", "ko", "lb", "lg", "ln", "lo",
+    "lt", "lv", "mg", "mk", "ml", "mn", "mr", "ms", "my", "ne", "nl", "no", "ns", "oc", "or", "pa", "pl", "ps", "pt",
+    "ro", "ru", "sd", "si", "sk", "sl", "so", "sq", "sr", "ss", "su", "sv", "sw", "ta", "th", "tl", "tn", "tr", "uk",
+    "ur", "uz", "vi", "wo", "xh", "yi", "yo", "zh", "zu"]
 
 let cachedSentences = new Map();
 
@@ -118,8 +22,14 @@ textInput.onchange = onChange;
 const translationOutput = document.getElementById("translation-output")
 
 function populateLanguageSelect(select) {
+    const names = new Intl.DisplayNames("de", {
+        type: "language",
+        languageDisplay: "standard",
+    });
+
     for (const importantLanguage of importantLanguages) {
-        addOptionToSelect(select, importantLanguage, languageCodes.get(importantLanguage))
+        const languageName = names.of(importantLanguage);
+        addOptionToSelect(select, importantLanguage, languageName)
     }
 
     // https://stackoverflow.com/questions/899148/html-select-option-separator
@@ -128,7 +38,15 @@ function populateLanguageSelect(select) {
     divider.innerText = "──────────"
     select.appendChild(divider)
 
-    const sortedLanguages = [...languageCodes.entries()].sort((a, b) => a[1].localeCompare(b[1]))
+    let sortedLanguages = [];
+    for (const supportedLanguage of supportedLanguages){
+         const languageName = names.of(supportedLanguage);
+         const entry = [supportedLanguage, languageName]
+        sortedLanguages.push(entry)
+    }
+
+    // sort by name
+    sortedLanguages = sortedLanguages.sort((a, b) => a[1].localeCompare(b[1]))
     for (const entry of sortedLanguages) {
         addOptionToSelect(select, entry[0], entry[1])
     }
