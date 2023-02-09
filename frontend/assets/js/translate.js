@@ -1,3 +1,6 @@
+import {franc, francAll} from 'https://esm.sh/franc@6?bundle'
+import langs from "https://esm.sh/langs@2"
+
 const importantLanguages = ["de", "en", "fr", "it", "pt", "es"]
 const supportedLanguages = ["af", "am", "ar", "ast", "az", "ba", "be", "bg", "bn", "br", "bs", "ca", "ceb", "cs", "cy",
     "da", "de", "el", "en", "es", "et", "fa", "ff", "fi", "fr", "fy", "ga", "gd", "gl", "gu", "ha", "he", "hi", "hr",
@@ -39,9 +42,9 @@ function populateLanguageSelect(select) {
     select.appendChild(divider)
 
     let sortedLanguages = [];
-    for (const supportedLanguage of supportedLanguages){
-         const languageName = names.of(supportedLanguage);
-         const entry = [supportedLanguage, languageName]
+    for (const supportedLanguage of supportedLanguages) {
+        const languageName = names.of(supportedLanguage);
+        const entry = [supportedLanguage, languageName]
         sortedLanguages.push(entry)
     }
 
@@ -60,11 +63,65 @@ function addOptionToSelect(select, value, text) {
     select.appendChild(option)
 }
 
-function getSourceLanguage(){
-    return sourceLanguageSelect.value
+function getSourceLanguage() {
+    const sourceLang = sourceLanguageSelect.value
+    if (sourceLang !== "") {
+        return sourceLang
+    }
+
+    const detectedLang = detectLanguage(textInput.value)
+    if (detectedLang === "") {
+        return ""
+    }
+
+    sourceLanguageSelect.value = detectedLang
+    return detectedLang
 }
 
-function getDestinationLanguage(){
+function detectLanguage(text){
+    if (text.length < 20) {
+        return ""
+    }
+
+    // the backend uses mostly ISO 639-1 language codes (e.g. "de"). ISO 639-2 language codes (e.g. "deu") are only used
+    // if the language doesn't have a ISO 639-1 language code
+    const allowed3CharLanguages = [];
+    for (const supportedLanguage of supportedLanguages) {
+        if (supportedLanguage.length === 3) {
+            allowed3CharLanguages.push(supportedLanguage) // this is already a ISO 639-2 language code
+            continue
+        }
+
+        if (supportedLanguage === "ns") { // the entry for Northern Sotho is missing in the library
+            allowed3CharLanguages.push("nso")
+            continue
+        }
+
+        const langEntry = langs.where("1", supportedLanguage); // where "1", filters by ISO 639-1 language code
+        allowed3CharLanguages.push(langEntry["2"]) // "2" selects the ISO 639-2 language code
+    }
+
+    const options = {
+        only: allowed3CharLanguages,
+    }
+    const detected3CharLanguage = franc(text, options)
+    if (detected3CharLanguage === "und"){ // "und" === undetermined
+        return ""
+    }
+
+    if (detected3CharLanguage in supportedLanguages){ // this language doesn't have a ISO 639-1 language code
+        return detected3CharLanguage
+    }
+
+    const detectedLanguageEntry = langs.where("2", detected3CharLanguage) // "2" selects the ISO 639-2 language code
+    if (detectedLanguageEntry === undefined) {
+        return "" // the language code conversion library doesn't know this language code
+    }
+
+    return detectedLanguageEntry["1"] // "1" selects the ISO 639-1 language code
+}
+
+function getDestinationLanguage() {
     return destinationLanguageSelect.value
 }
 
@@ -72,6 +129,10 @@ function getDestinationLanguage(){
 // be translated. The current sentence is only translated if the user stops typing.
 function onInput() {
     const sourceLang = getSourceLanguage()
+    if (sourceLang === "") {
+        return
+    }
+
     const destLang = getDestinationLanguage()
     const inputSentenceEntries = getInputSentences();
     for (const sentenceEntry of inputSentenceEntries) {
@@ -91,6 +152,10 @@ function onInput() {
 // leaves the text input. In any case the whole text should be translated.
 function onChange() {
     const sourceLang = getSourceLanguage()
+    if (sourceLang === "") {
+        return
+    }
+
     const destLang = getDestinationLanguage()
     const inputSentenceEntries = getInputSentences();
     for (const sentenceEntry of inputSentenceEntries) {
@@ -129,6 +194,13 @@ function getInputSentences() {
 }
 
 function updateOutput() {
+    const sourceLang = getSourceLanguage()
+    if (sourceLang === "") {
+        return
+    }
+
+    const destLang = getDestinationLanguage()
+
     const spans = []
 
     const sentenceEntries = getInputSentences();
@@ -136,7 +208,7 @@ function updateOutput() {
     let insertLoadingSpan = true;
     for (const sentenceEntry of sentenceEntries) {
         const span = document.createElement('span')
-        const translation = getCachedSentence(sentenceEntry.sentence, getSourceLanguage(), getDestinationLanguage())
+        const translation = getCachedSentence(sentenceEntry.sentence, sourceLang, destLang)
         if (translation === undefined || translation === null) {
             if (insertLoadingSpan) {
                 span.innerHTML = " <i>Lädt...</i>"
