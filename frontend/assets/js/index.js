@@ -131,7 +131,7 @@ function displayLanguageSelectHint(){
     removeAllChildren(translationOutput)
 
     // This message should only be displayed if the user already entered some text
-    if (textInput.value.length == 0){
+    if (textInput.value.length === 0){
         return;
     }
 
