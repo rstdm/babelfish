@@ -25,9 +25,9 @@ build-frontend-image:
     services: ["docker:dind"]
     script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE/babelfish-frontend:VERSION_NUMBER frontend/
-    - docker tag $CI_REGISTRY_IMAGE/babelfish-frontend:VERSION_NUMBER $CI_REGISTRY_IMAGE/babelfish-frontend:latest
-    - docker push $CI_REGISTRY_IMAGE/babelfish-frontend:VERSION_NUMBER
+    - docker build -t $CI_REGISTRY_IMAGE/babelfish-frontend:$VERSION_NUMBER frontend/
+    - docker tag $CI_REGISTRY_IMAGE/babelfish-frontend:$VERSION_NUMBER $CI_REGISTRY_IMAGE/babelfish-frontend:latest
+    - docker push $CI_REGISTRY_IMAGE/babelfish-frontend:$VERSION_NUMBER
     - docker push $CI_REGISTRY_IMAGE/babelfish-frontend:latest
     needs: []
 
@@ -37,9 +37,9 @@ build-backend-image:
     services: ["docker:dind"]
     script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE/babelfish-backend:VERSION_NUMBER backend/
-    - docker tag $CI_REGISTRY_IMAGE/babelfish-backend:VERSION_NUMBER $CI_REGISTRY_IMAGE/babelfish-backend:latest
-    - docker push $CI_REGISTRY_IMAGE/babelfish-backend:VERSION_NUMBER
+    - docker build -t $CI_REGISTRY_IMAGE/babelfish-backend:$VERSION_NUMBER backend/
+    - docker tag $CI_REGISTRY_IMAGE/babelfish-backend:$VERSION_NUMBER $CI_REGISTRY_IMAGE/babelfish-backend:latest
+    - docker push $CI_REGISTRY_IMAGE/babelfish-backend:$VERSION_NUMBER
     - docker push $CI_REGISTRY_IMAGE/babelfish-backend:latest
     needs: []
 
