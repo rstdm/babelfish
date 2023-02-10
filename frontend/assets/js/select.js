@@ -19,7 +19,12 @@ function populateLanguageSelect(select) {
 
     let sortedLanguages = [];
     for (const supportedLanguage of supportedLanguages) {
-        const languageName = names.of(supportedLanguage);
+        let languageName;
+        if (supportedLanguage === "ns") { // at least Firefox doesn't know about this language
+            languageName = "Nord-Sotho"
+        } else {
+            languageName = names.of(supportedLanguage);
+        }
         const entry = [supportedLanguage, languageName]
         sortedLanguages.push(entry)
     }
