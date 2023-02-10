@@ -1,4 +1,8 @@
-image: 'thlmylab/swakkd:stable'
+default:
+    image: 'thlmylab/swakkd:stable'
+
+variables:
+    VERSION_NUMBER: 1.0.0-alpha.$CI_PIPELINE_ID
 
 stages:
 - prepare
@@ -13,15 +17,31 @@ secrets:
                     --docker-server=$CI_REGISTRY \
                     --docker-username=image-registry \ 
                     --docker-password=$CI_REGISTRY_TOKEN"
+    needs: []
 
-hello-img:
+build-frontend-image:
     stage: build
     image: docker:stable
     services: ["docker:dind"]
     script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE/hello:latest hello/
-    - docker push $CI_REGISTRY_IMAGE/hello:latest
+    - docker build -t $CI_REGISTRY_IMAGE/babelfish-frontend:VERSION_NUMBER frontend/
+    - docker tag $CI_REGISTRY_IMAGE/babelfish-frontend:latest
+    - docker push $CI_REGISTRY_IMAGE/babelfish-frontend:VERSION_NUMBER
+    - docker push $CI_REGISTRY_IMAGE/babelfish-frontend:latest
+    needs: []
+
+build-backend-image:
+    stage: build
+    image: docker:stable
+    services: ["docker:dind"]
+    script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE/babelfish-backend:VERSION_NUMBER backend/
+    - docker tag $CI_REGISTRY_IMAGE/babelfish-backend:latest
+    - docker push $CI_REGISTRY_IMAGE/babelfish-backend:VERSION_NUMBER
+    - docker push $CI_REGISTRY_IMAGE/babelfish-backend:latest
+    needs: []
 
 nginx:
     stage: deploy
