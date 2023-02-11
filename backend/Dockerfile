@@ -35,6 +35,6 @@ USER pythonuser
 ENV TRANSFORMERS_OFFLINE=1
 ENV HF_DATASETS_OFFLINE=1
 
-CMD ["uvicorn", "--host", "0.0.0.0", "--port", "80", "app:app"]
+CMD ["uvicorn", "--host", "0.0.0.0", "app:app"]
 
 ADD *.py ./
