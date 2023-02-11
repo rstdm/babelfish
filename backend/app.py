@@ -14,15 +14,14 @@ app.add_middleware(  # TODO cors is not needed in production
 
 
 class TranslateRequestPayload(BaseModel):
-    sourceLanguage: Language = Field(description="The ISO 639‑1 language code of the sourceText.")
-    destinationLanguage: Language = Field(description="The ISO 639‑1 language code of the translated text.")
-    sourceText: str = Field(description="The text in the sourceLanguage that should be translated.", max_length=500)
+    destinationLanguage: Language = Field(description="The language of the translated text.")
+    sourceText: str = Field(description="The text that should be translated. The text can be in any supported language "
+                                        "and different languages can be mixed in the same text.", max_length=500)
 
     class Config:
         schema_extra = {
             "example": {
-                "sourceLanguage": "en",
-                "destinationLanguage": "de",
+                "destinationLanguage": "deu",
                 "sourceText": "This english text snippet will be translated into german.",
             }
         }
@@ -40,5 +39,5 @@ class TranslateResponsePayload(BaseModel):
                       "workers."
           )
 def read_item(request_payload: TranslateRequestPayload) -> TranslateResponsePayload:
-    translated_text = translate(request_payload.sourceLanguage, request_payload.destinationLanguage, request_payload.sourceText)
+    translated_text = translate(request_payload.destinationLanguage, request_payload.sourceText)
     return TranslateResponsePayload(translatedText=translated_text)
