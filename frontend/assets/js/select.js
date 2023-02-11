@@ -19,12 +19,17 @@ function populateLanguageSelect(select) {
 
     let sortedLanguages = [];
     for (const supportedLanguage of supportedLanguages) {
-        let languageName;
-        if (supportedLanguage === "ns") { // at least Firefox doesn't know about this language
-            languageName = "Nord-Sotho"
-        } else {
-            languageName = names.of(supportedLanguage);
+
+        // some language codes include additional information (e.g. "afr_Arab")
+        const match = supportedLanguage.match("([^_]*)(?:_(.*))?")
+        const language = match[1];
+        const version = match[2]
+
+        let languageName = names.of(language); // the browser knows only about the official language codes (e.g. "afr")
+        if (version !== undefined){
+            languageName = `${languageName} (${version})` // add the additional information (e.g. "Arab")
         }
+
         const entry = [supportedLanguage, languageName]
         sortedLanguages.push(entry)
     }

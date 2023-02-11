@@ -2,29 +2,26 @@ import {updateOutput} from "./index.js";
 
 let cachedSentences = new Map();
 
-function getCachedSentence(srcSentence, srcLang, dstLang) {
-    const lookupKey = `${srcLang}-${dstLang}`
+function getCachedSentence(srcSentence, dstLang) {
     const cacheEntry = cachedSentences.get(srcSentence) || new Map()
 
-    return cacheEntry.get(lookupKey)
+    return cacheEntry.get(dstLang)
 }
 
-function setCachedSentence(srcSentence, dstSentence, srcLang, dstLang) {
-    const lookupKey = `${srcLang}-${dstLang}`
+function setCachedSentence(srcSentence, dstSentence, dstLang) {
     const cacheEntry = cachedSentences.get(srcSentence) || new Map()
-    cacheEntry.set(lookupKey, dstSentence)
+    cacheEntry.set(dstLang, dstSentence)
     cachedSentences.set(srcSentence, cacheEntry)
 }
 
-async function translateSentence(sentence, srcLang, dstLang) {
-    const cachedTranslatedSentence = getCachedSentence(sentence, srcLang, dstLang)
+async function translateSentence(sentence, dstLang) {
+    const cachedTranslatedSentence = getCachedSentence(sentence, dstLang)
     if (cachedTranslatedSentence !== undefined) {
         return
     }
-    setCachedSentence(sentence, null, srcLang, dstLang)
+    setCachedSentence(sentence, null, dstLang)
 
     const requestBody = {
-        sourceLanguage: srcLang,
         destinationLanguage: dstLang,
         sourceText: sentence,
     }
@@ -51,7 +48,7 @@ async function translateSentence(sentence, srcLang, dstLang) {
     let trailingWhitespace = sentence.match("\\s*$")
     translatedSentence = leadingWhitespace + translatedSentence + trailingWhitespace;
 
-    setCachedSentence(sentence, translatedSentence, srcLang, dstLang)
+    setCachedSentence(sentence, translatedSentence, dstLang)
     updateOutput();
 }
 
