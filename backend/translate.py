@@ -1,49 +1,41 @@
 from threading import Lock
 
-from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
+from transformers import MarianTokenizer, MarianMTModel
 
 from language import Language
 
-# load model and tokenizer. The required data must be present in the model or tokenizer directory. The data can be
-# downloaded by executing download_model.py
-repo = "facebook/m2m100_418M"
-model = M2M100ForConditionalGeneration.from_pretrained(repo)
-tokenizer = M2M100Tokenizer.from_pretrained(repo)
-
-# translating text is very cpu intensive (100% CPU utilization). Therefore, running multiple requests in parallel does
-# not improve performance. This mutex ensures that only one translation is performed at a time.
-mutex = Lock()
+# load model and tokenizer.
+model_name = "Helsinki-NLP/opus-mt-ine-ine"
+print("loading tokenizer")  # this takes a few seconds...
+tokenizer = MarianTokenizer.from_pretrained(model_name)
+print("loading model")  # this takes a few seconds...
+model = MarianMTModel.from_pretrained(model_name)
 
 
-def translate(source_language: Language, destination_language: Language, source_text: str) -> str:
-    mutex.acquire()
-    try:
-        if source_text.strip() == "" or source_language == destination_language:
-            # if the text only contains whitespace or the source and destination language are identical we don't have to
-            # translate the text
-            return source_text
+def translate(destination_language: Language, source_text: str) -> str:
+    if source_text.strip() == "":
+        # if the text only contains whitespace we don't have to translate the text
+        return source_text
 
-        # this section is based on the example code from https://huggingface.co/facebook/m2m100_418M
-        tokenizer.src_lang = source_language  # This is ok because the mutex ensures that no translations run in parallel
-        encoded_text = tokenizer(source_text, return_tensors="pt")
-        generated_tokens = model.generate(
-            **encoded_text,
-            forced_bos_token_id=tokenizer.get_lang_id(destination_language),
-            # the model specifies this parameter in its config.json file:
-            # https://huggingface.co/facebook/m2m100_418M/blob/a84767a43c9159c5c15eb3964dce2179684647f6/config.json#L26
-            # However, this generates this warning:
-            #       /usr/local/lib/python3.10/site-packages/transformers/generation/utils.py:1273: UserWarning: Neither
-            #       `max_length` nor `max_new_tokens` has been set, `max_length` will default to
-            #       200 (`generation_config.max_length`). Controlling `max_length` via the config is deprecated
-            #       and `max_length` will be removed from the config in v5 of Transformers -- we recommend
-            #       using `max_new_tokens` to control the maximum length of the generation.
-            # For the time being, I'm using max_length because I'm unaware of the differences of max_length and
-            # max_new_tokens. This is the documentation:
-            # https://huggingface.co/docs/transformers/v4.18.0/en/main_classes/text_generation#transformers.generation_utils.GenerationMixin.generate
-            max_length=200
-        )
-        translated_text = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)[0]
+    # Quoting the documentation at https://huggingface.co/docs/transformers/model_doc/marian#multilingual-models:
+    # "If a model can output multiple languages, and you should specify a language code by prepending the desired output
+    # language to the src_text."
+    # In my opinion this is a horrible idea, but I didn't create this model...
+    # We don't have to specify the source language: "Note that if a model is only multilingual on the source side,
+    # like Helsinki-NLP/opus-mt-roa-en, no language codes are required."
+    source_text = f'>>{destination_language}<< {source_text}'
 
-        return translated_text
-    finally:
-        mutex.release()
+    tokens = tokenizer([source_text], return_tensors="pt", padding=True)
+
+    # the model specifies the value of max_length in its generation_config.json file:
+    # https://huggingface.co/Helsinki-NLP/opus-mt-ine-ine/blob/467b0f37b929d0cae6d8db2eb994a1af39916f19/generation_config.json#L12
+    # However, this generates this warning:
+    #       /lib/python3.10/site-packages/transformers/generation/utils.py:1273: UserWarning: Neither `max_length` nor
+    #       `max_new_tokens` has been set, `max_length` will default to 512 (`generation_config.max_length`).
+    #       Controlling `max_length` via the config is deprecated and `max_length` will be removed from the config in
+    #       v5 of Transformers -- we recommend using `max_new_tokens` to control the maximum length of the generation.
+    # For the time being, I'm using max_length because I'm unaware of the differences of max_length and
+    # max_new_tokens. This is the documentation:
+    # https://huggingface.co/docs/transformers/v4.18.0/en/main_classes/text_generation#transformers.generation_utils.GenerationMixin.generate
+    translated = model.generate(**tokens, max_length=512)
+    return tokenizer.decode(translated[0], skip_special_tokens=True)
