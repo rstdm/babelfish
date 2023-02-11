@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: babelfish-backend
+  labels:
+    app: babelfish-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: babelfish-backend
+  template:
+    metadata:
+      labels:
+        app: babelfish-backend
+    spec:
+      imagePullSecrets:
+        - name: "{{.Values.imagePullSecret}}"
+      containers:
+        - name: babelfish-backend
+          image: "{{.Values.imageRegistry}}/babelfish-backend:{{.Values.backendImageTag}}"
+          resources:
+            limits:
+              cpu: '2'
+              memory: 1G
+            requests:
+              cpu: 250m
+              memory: 500M
+          ports:
+            - containerPort: 8000
