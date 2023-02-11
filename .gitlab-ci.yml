@@ -3,6 +3,7 @@ default:
 
 variables:
     VERSION_NUMBER: 1.0.0-alpha.$CI_PIPELINE_ID
+    IMAGE_PULL_SECRET: babelfish-image-pull-secret
 
 stages:
 - prepare
@@ -12,8 +13,8 @@ stages:
 secrets:
     stage: prepare
     script:
-    - kubectl delete secret gitlab-registry-$CI_PROJECT_ID || true
-    - "kubectl create secret docker-registry gitlab-registry-$CI_PROJECT_ID \
+    - kubectl delete secret $IMAGE_PULL_SECRET || true
+    - "kubectl create secret docker-registry $IMAGE_PULL_SECRET \
                     --docker-server=$CI_REGISTRY \
                     --docker-username=image-registry \ 
                     --docker-password=$CI_REGISTRY_TOKEN"
@@ -43,17 +44,11 @@ build-backend-image:
     - docker push $CI_REGISTRY_IMAGE/babelfish-backend:latest
     needs: []
 
-nginx:
+deploy:
     stage: deploy
     script:
-    - cd deploy
-    - kubectl apply -f nginx-dep.yaml
-    - kubectl apply -f nginx-svc.yaml
-
-hello:
-    stage: deploy
-    script:
-    - cd deploy
-    - mo hello-dep.yaml | kubectl delete -f - || true
-    - mo hello-dep.yaml | kubectl apply -f -
-    - mo hello-svc.yaml | kubectl apply -f -
+    - helm upgrade --set-string "imagePullSecret=$IMAGE_PULL_SECRET,backendImageTag=$VERSION_NUMBER" babelfish helm-chart/
+    needs:
+      - secrets
+      - build-frontend-image
+      - build-backend-image
