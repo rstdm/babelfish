@@ -1,12 +1,14 @@
 from threading import Lock
 
-from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer, MarianTokenizer, MarianMTModel
+from transformers import MarianTokenizer, MarianMTModel
 
 from language import Language
 
 # load model and tokenizer.
 model_name = "Helsinki-NLP/opus-mt-ine-ine"
+print("loading tokenizer")  # this takes a few seconds...
 tokenizer = MarianTokenizer.from_pretrained(model_name)
+print("loading model")  # this takes a few seconds...
 model = MarianMTModel.from_pretrained(model_name)
 
 

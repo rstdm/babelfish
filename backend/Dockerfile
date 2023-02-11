@@ -7,7 +7,7 @@
 # No attemt was made to compile pytorch.
 #
 # Using python-slim instead of python-alpine increases the image size by about 100 MB. However, the total
-# image size is about 3GB due to the immense size of pytorch (~1GB) and the deep learning model (~2GB). Adding
+# image size is about 1.4GB due to the immense size of pytorch (~750GB) and the deep learning model (~270MB). Adding
 # 100MB more doesn't make much of a difference.
 
 FROM python:3.10-slim AS build
@@ -35,6 +35,6 @@ USER pythonuser
 ENV TRANSFORMERS_OFFLINE=1
 ENV HF_DATASETS_OFFLINE=1
 
-CMD ["uvicorn", "--host", "0.0.0.0", "app:app"]
+CMD ["uvicorn", "--host", "0.0.0.0", "--port", "80", "app:app"]
 
 ADD *.py ./
