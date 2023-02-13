@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: babelfish-backend
+spec:
+  selector:
+    app: babelfish-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000

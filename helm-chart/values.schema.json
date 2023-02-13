@@ -3,7 +3,8 @@
   "required": [
     "imageRegistry",
     "imagePullSecret",
-    "backendImageTag"
+    "backendImageTag",
+    "ingress"
   ],
   "properties": {
     "imageRegistry": {
@@ -14,6 +15,21 @@
     },
     "backendImageTag": {
       "type": "string"
+    },
+    "ingress": {
+      "type": "object",
+      "required": [
+        "host"
+      ],
+      "properties": {
+        "host": {
+          "type": "string"
+        },
+        "annotations": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false

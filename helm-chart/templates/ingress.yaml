@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: babelfish
+  annotations: {{.Values.ingress.annotations | toJson }}
+spec:
+  rules:
+  - host: "{{.Values.ingress.host}}"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: babelfish-backend
+            port:
+              number: 80
+  tls:
+  - secretName: babelfish-ingress-cert
+    hosts:
+      - "{{.Values.ingress.host}}"
