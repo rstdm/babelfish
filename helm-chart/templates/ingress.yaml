@@ -7,13 +7,20 @@ spec:
   - host: "{{.Values.host}}"
     http:
       paths:
-      - pathType: Prefix
-        path: /
-        backend:
-          service:
-            name: babelfish-backend
-            port:
-              number: 80
+        - path: /translate
+          pathType: Exact
+          backend:
+            service:
+              name: babelfish-backend
+              port:
+                number: 80
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: babelfish-frontend
+              port:
+                number: 80
   tls:
   - secretName: babelfish-ingress-cert
     hosts:

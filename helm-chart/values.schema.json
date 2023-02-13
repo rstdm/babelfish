@@ -4,6 +4,7 @@
     "imageRegistry",
     "imagePullSecret",
     "backendImageTag",
+    "frontendImageTag",
     "host"
   ],
   "properties": {
@@ -14,6 +15,9 @@
       "type": "string"
     },
     "backendImageTag": {
+      "type": "string"
+    },
+    "frontendImageTag": {
       "type": "string"
     },
     "host": {

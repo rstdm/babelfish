@@ -47,7 +47,7 @@ build-backend-image:
 deploy:
     stage: deploy
     script:
-    - helm upgrade --set-string "imagePullSecret=$IMAGE_PULL_SECRET,backendImageTag=$VERSION_NUMBER,host=babelfish-$CI_PROJECT_ID.edu.k8s.th-luebeck.dev" babelfish helm-chart/
+    - helm upgrade --set-string "imagePullSecret=$IMAGE_PULL_SECRET,backendImageTag=$VERSION_NUMBER,frontendImageTag=$VERSION_NUMBER,host=babelfish-$CI_PROJECT_ID.edu.k8s.th-luebeck.dev" babelfish helm-chart/
     needs:
       - secrets
       - build-frontend-image
