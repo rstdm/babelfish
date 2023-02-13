@@ -2,10 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: babelfish
-  annotations: {{.Values.ingress.annotations | toJson }}
 spec:
   rules:
-  - host: "{{.Values.ingress.host}}"
+  - host: "{{.Values.host}}"
     http:
       paths:
       - pathType: Prefix
@@ -18,4 +17,4 @@ spec:
   tls:
   - secretName: babelfish-ingress-cert
     hosts:
-      - "{{.Values.ingress.host}}"
+      - "{{.Values.host}}"
