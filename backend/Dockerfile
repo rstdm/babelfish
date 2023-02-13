@@ -18,7 +18,7 @@ ENV TRANSFORMERS_CACHE=/transformer-cache
 # the code in the container shouldn't run as root
 RUN groupadd -r pythonuser && useradd -r -g pythonuser pythonuser
 
-ADD requirements.txt download_model.py ./
+COPY requirements.txt download_model.py ./
 
 # download dependencies and model. PYTHONDONTWRITEBYTECODE tells the python interpreter not to create
 # pycache files.
@@ -37,4 +37,4 @@ ENV HF_DATASETS_OFFLINE=1
 
 CMD ["uvicorn", "--host", "0.0.0.0", "app:app"]
 
-ADD *.py ./
+COPY *.py ./
