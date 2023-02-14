@@ -8,6 +8,7 @@ variables:
 stages:
 - prepare
 - build
+- test
 - deploy
 
 secrets:
@@ -42,6 +43,14 @@ build-backend-image:
     - docker tag $CI_REGISTRY_IMAGE/babelfish-backend:$VERSION_NUMBER $CI_REGISTRY_IMAGE/babelfish-backend:latest
     - docker push $CI_REGISTRY_IMAGE/babelfish-backend:$VERSION_NUMBER
     - docker push $CI_REGISTRY_IMAGE/babelfish-backend:latest
+    needs: []
+
+unit-test:
+    stage: test
+    script:
+        - cd backend
+        - pip3 install --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+        - python -m unittest discover --p "*_test.py"
     needs: []
 
 deploy:

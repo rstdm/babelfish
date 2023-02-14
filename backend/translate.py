@@ -1,5 +1,3 @@
-from threading import Lock
-
 from transformers import MarianTokenizer, MarianMTModel
 
 from language import Language
