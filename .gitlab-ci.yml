@@ -2,6 +2,7 @@ image: 'thlmylab/swakkd:stable'
 
 stages:
 - prepare
+- test
 - build
 - deploy
 
@@ -13,6 +14,13 @@ secrets:
                     --docker-server=$CI_REGISTRY \
                     --docker-username=image-registry \ 
                     --docker-password=$CI_REGISTRY_TOKEN"
+
+unit-test:
+    stage: test
+    script:
+        - cd backend
+        - python -m unittest discover --p "*_test.py"
+    needs: []
 
 hello-img:
     stage: build
