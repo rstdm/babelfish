@@ -7,8 +7,8 @@ variables:
 
 stages:
 - prepare
-- build
 - test
+- build
 - deploy
 
 secrets:
@@ -19,6 +19,15 @@ secrets:
                     --docker-server=$CI_REGISTRY \
                     --docker-username=image-registry \ 
                     --docker-password=$CI_REGISTRY_TOKEN"
+    needs: []
+
+unit-test:
+    stage: test
+    image: debian:bookworm-slim # precompiled libraries aren't available for alpine linux
+    script:
+        - cd backend
+        - pip3 install --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+        - python -m unittest discover --p "*_test.py"
     needs: []
 
 build-frontend-image:
@@ -45,16 +54,6 @@ build-backend-image:
     - docker push $CI_REGISTRY_IMAGE/babelfish-backend:latest
     needs: []
 
-unit-test:
-    stage: test
-    image: docker:stable
-    services: ["docker:dind"]
-    # it's complicated to install the binary dependencies for the deep learning model and to fetch the model
-    # But since everything has already been packaged into the container we can as well use it.
-    script:
-        - docker run -t babelfish-backend:$VERSION_NUMBER python -m unittest discover --p "*_test.py"
-    needs:
-        - build-backend-image
 
 deploy:
     stage: deploy
