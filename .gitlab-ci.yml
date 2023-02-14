@@ -47,11 +47,14 @@ build-backend-image:
 
 unit-test:
     stage: test
+    image: docker:stable
+    services: ["docker:dind"]
+    # it's complicated to install the binary dependencies for the deep learning model and to fetch the model
+    # But since everything has already been packaged into the container we can as well use it.
     script:
-        - cd backend
-        - pip3 install --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
-        - python -m unittest discover --p "*_test.py"
-    needs: []
+        - docker run -t babelfish-backend:$VERSION_NUMBER python -m unittest discover --p "*_test.py"
+    needs:
+        - build-backend-image
 
 deploy:
     stage: deploy
