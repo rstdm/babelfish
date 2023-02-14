@@ -14,6 +14,8 @@ populateLanguageSelect(destinationLanguageSelect)
 textInput.oninput = onInput;
 textInput.onchange = onChange;
 
+updateOutput()
+
 // onInput is called after every key press. The currently edited sentence is therefore constantly changing and shouldn't
 // be translated. The current sentence is only translated if the user stops typing.
 function onInput() {
@@ -74,6 +76,13 @@ function updateOutput() {
             insertLoadingSpan = true;
         }
 
+        spans.push(span)
+    }
+
+    if (spans.length === 0) {
+        const span = document.createElement('span')
+        span.innerHTML = "Wenn Sie auf der linken Seite Text eingeben, erscheint hier die Übersetzung."
+        span.style.color = "gray"
         spans.push(span)
     }
 
