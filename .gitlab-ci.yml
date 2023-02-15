@@ -33,8 +33,8 @@ unit-test:
         - python -m unittest discover --p "*_test.py"
     cache: # cache dependencies and models
         paths:
-            - .cache/pip
-            - .cache/huggingface/
+            - ~/.cache/pip
+            - ~/.cache/huggingface/
             - venv/
 
     needs: []
