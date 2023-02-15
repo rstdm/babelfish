@@ -25,6 +25,7 @@ unit-test:
     stage: test
     image: python:3.10-slim
     script:
+        - pip cache dir # TODO remove
         - pip3 install virtualenv
         - virtualenv venv
         - source venv/bin/activate
