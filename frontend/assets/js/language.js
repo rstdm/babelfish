@@ -1,15 +1,15 @@
 const importantLanguages = ["deu", "eng", "fra", "ita", "por", "spa"]
-const supportedLanguages = ["afr", "afr_Arab", "aln", "ang_Latn", "arg", "asm", "ast", "awa", "bel", "bel_Latn", "ben",
-    "bho", "bjn", "bos_Latn", "bre", "bul", "bul_Latn", "cat", "ces", "cor", "cos", "csb_Latn", "cym", "dan", "deu",
-    "dsb", "egl", "ell", "eng", "enm_Latn", "ext", "fao", "fra", "frm_Latn", "frr", "fry", "gcf_Latn", "gla", "gle",
-    "glg", "glv", "gom", "gos", "got_Goth", "grc_Grek", "gsw", "guj", "hat", "hif_Latn", "hin", "hrv", "hsb", "hye",
-    "hye_Latn", "ind", "isl", "ita", "jdt_Cyrl", "ksh", "kur_Arab", "kur_Latn", "lad", "lad_Latn", "lat_Grek",
-    "lat_Latn", "lav", "lij", "lit", "lld_Latn", "lmo", "ltg", "ltz", "mai", "mar", "max_Latn", "mfe", "min", "mkd",
-    "mwl", "nds", "nld", "nno", "nob", "nob_Hebr", "non_Latn", "npi", "oci", "ori", "orv_Cyrl", "oss", "pan_Guru",
-    "pap", "pcd", "pdc", "pes", "pes_Latn", "pes_Thaa", "pms", "pnb", "pol", "por", "prg_Latn", "pus", "roh", "rom",
-    "ron", "rue", "rus", "rus_Latn", "san_Deva", "scn", "sco", "sgs", "sin", "slv", "snd_Arab", "spa", "sqi", "srd",
-    "srp_Cyrl", "srp_Latn", "stq", "swe", "swg", "tgk_Cyrl", "tly_Latn", "tmw_Latn", "ukr", "urd", "vec", "wln", "yid",
-    "zlm_Latn", "zsm_Latn", "zza"]
+const supportedLanguages = ["afr", "ang_Latn", "arg", "asm", "ast", "bel", "bel_Latn", "ben",
+    "bos_Latn", "bre", "bul", "bul_Latn", "cat", "ces", "cor", "csb_Latn", "cym", "dan", "deu",
+    "ell", "eng", "fao", "fra", "fry", "gla", "gle",
+    "glg", "glv", "guj", "hat", "hin", "hrv", "hsb", "hye",
+    "ind", "isl", "ita", "kur_Arab", "kur_Latn",
+    "lat_Latn", "lav", "lit", "ltg", "ltz", "mai", "mar", "mfe", "min", "mkd",
+    "mwl", "nds", "nld", "nno", "nob", "oci", "ori", "oss", "pan_Guru",
+    "pap", "pes", "pol", "por", "pus", "rom",
+    "ron", "rus", "rus_Latn", "san_Deva", "sin", "slv", "snd_Arab", "spa", "sqi",
+    "srp_Cyrl", "srp_Latn", "swe", "tgk_Cyrl", "ukr", "urd", "wln", "yid",
+    "zlm_Latn"]
 
 function splitText(text, cursorLocation) {
     const re = new RegExp("[^.!?]+[.!?]?|[.!?]", "dg"); // text.split(/([.!?]) /g) would remove the delimiter
