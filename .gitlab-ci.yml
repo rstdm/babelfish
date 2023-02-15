@@ -31,17 +31,14 @@ unit-test:
         - cd backend
         - pip3 install --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
         - python -m unittest discover --p "*_test.py"
-        - find . # TODO remove
     variables:
         PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
         HUGGINGFACE_HUB_CACHE: "$CI_PROJECT_DIR/.cache/huggingface"
-
     cache: # cache dependencies and models
         paths:
             - .cache/pip
             - .cache/huggingface/
             - venv/
-
     needs: []
 
 build-frontend-image:
