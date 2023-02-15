@@ -25,9 +25,17 @@ unit-test:
     stage: test
     image: python:3.10-slim
     script:
+        - virtualenv venv
+        - source venv/bin/activate
         - cd backend
         - pip3 install --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
         - python -m unittest discover --p "*_test.py"
+    cache: # cache dependencies and models
+        paths:
+            - .cache/pip
+            - .cache/huggingface/
+            - venv/
+
     needs: []
 
 build-frontend-image:
