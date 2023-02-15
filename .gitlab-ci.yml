@@ -25,21 +25,21 @@ unit-test:
     stage: test
     image: python:3.10-slim
     script:
-        - pip cache dir # TODO remove
-        - echo ~
-        - echo $HOME
-        - echo pwd
         - pip3 install virtualenv
         - virtualenv venv
         - source venv/bin/activate
         - cd backend
         - pip3 install --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
         - python -m unittest discover --p "*_test.py"
-        - find /root/.cache/
+        - find . # TODO remove
+    variables:
+        PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+        HUGGINGFACE_HUB_CACHE: "$CI_PROJECT_DIR/.cache/huggingface"
+
     cache: # cache dependencies and models
         paths:
-            - ~/.cache/pip
-            - ~/.cache/huggingface/
+            - .cache/pip
+            - .cache/huggingface/
             - venv/
 
     needs: []
