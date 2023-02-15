@@ -29,7 +29,7 @@ function onInput() {
 
         debounce(function () {
             translateSentence(sentenceEntry.sentence, destLang)
-        }, 2000)
+        }, 500)
     }
     updateOutput()
 }
