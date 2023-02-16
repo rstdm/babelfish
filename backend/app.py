@@ -7,11 +7,18 @@ from translate import translate
 
 
 class Settings(BaseSettings):
+    # CORS should be allowed by default because it's not needed in production
     cors_allowed_origins: list[str] = []
+    # The openAPI documentation should be allowed by default because it's not needed in production
+    api_documentation_enabled: bool = False
 
 
 settings = Settings()
-app = FastAPI()
+
+# Setting the openapi_url to an empty string disables the documentation
+# https://fastapi.tiangolo.com/advanced/conditional-openapi/
+openapi_url = "/openapi.json" if settings.api_documentation_enabled else ""
+app = FastAPI(openapi_url=openapi_url)
 
 if len(settings.cors_allowed_origins) > 0:  # CORS is needed for local debugging, but not in production
     print(f'Allowing CORS for these origins: {settings.cors_allowed_origins}')
