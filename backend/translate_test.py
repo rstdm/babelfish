@@ -3,7 +3,7 @@ from translate import translate
 from language import Language
 
 
-class TestStringMethods(unittest.TestCase):
+class UnitTest(unittest.TestCase):
 
     def test_empty_string(self):
         self.assertEqual(translate(Language.deu, ''), '')

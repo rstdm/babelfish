@@ -1,5 +1,6 @@
 # direct dependencies
 fastapi==0.91.0
+httpx==0.23.3
 uvicorn==0.20.0
 transformers==4.26.1
 sacremoses==0.0.53
@@ -13,6 +14,7 @@ charset-normalizer==3.0.1
 click==8.1.3
 filelock==3.9.0
 h11==0.14.0
+httpcore==0.16.3
 huggingface-hub==0.12.0
 idna==3.4
 joblib==1.2.0
@@ -22,6 +24,7 @@ pydantic==1.10.4
 PyYAML==6.0
 regex==2022.10.31
 requests==2.28.2
+rfc3986==1.5.0
 six==1.16.0
 sniffio==1.3.0
 starlette==0.24.0
