@@ -1,16 +1,25 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, BaseSettings
 
 from language import Language
 from translate import translate
 
+
+class Settings(BaseSettings):
+    cors_allowed_origins: list[str] = []
+
+
+settings = Settings()
 app = FastAPI()
-app.add_middleware(  # TODO cors is not needed in production
-    CORSMiddleware,
-    allow_origins=["http://localhost:8081"],
-    allow_methods=["*"],
-)
+
+if len(settings.cors_allowed_origins) > 0:  # CORS is needed for local debugging, but not in production
+    print(f'Allowing CORS for these origins: {settings.cors_allowed_origins}')
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_allowed_origins,
+        allow_methods=["*"],
+    )
 
 
 class TranslateRequestPayload(BaseModel):
