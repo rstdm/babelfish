@@ -23,12 +23,12 @@ function onInput() {
     const inputSentenceEntries = getInputSentences();
     for (const sentenceEntry of inputSentenceEntries) {
         if (!sentenceEntry.edited) {
-            translateSentence(sentenceEntry.sentence, destLang)
+            translateSentence(sentenceEntry.sentence, destLang, updateOutput)
             continue
         }
 
         debounce(function () {
-            translateSentence(sentenceEntry.sentence, destLang)
+            translateSentence(sentenceEntry.sentence, destLang, updateOutput)
         }, 500)
     }
     updateOutput()
@@ -40,7 +40,7 @@ function onChange() {
     const destLang = getDestinationLanguage()
     const inputSentenceEntries = getInputSentences();
     for (const sentenceEntry of inputSentenceEntries) {
-        translateSentence(sentenceEntry.sentence, destLang)
+        translateSentence(sentenceEntry.sentence, destLang, updateOutput)
     }
     updateOutput()
 }

@@ -1,5 +1,3 @@
-import {updateOutput} from "./index.js";
-
 let cachedSentences = new Map();
 
 function getCachedSentence(srcSentence, dstLang) {
@@ -14,7 +12,7 @@ function setCachedSentence(srcSentence, dstSentence, dstLang) {
     cachedSentences.set(srcSentence, cacheEntry)
 }
 
-async function translateSentence(sentence, dstLang) {
+async function translateSentence(sentence, dstLang, updateCacheCallback) {
     const cachedTranslatedSentence = getCachedSentence(sentence, dstLang)
     if (cachedTranslatedSentence !== undefined) {
         return
@@ -49,7 +47,7 @@ async function translateSentence(sentence, dstLang) {
     translatedSentence = leadingWhitespace + translatedSentence + trailingWhitespace;
 
     setCachedSentence(sentence, translatedSentence, dstLang)
-    updateOutput();
+    updateCacheCallback()
 }
 
 
