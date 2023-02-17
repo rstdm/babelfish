@@ -4,3 +4,5 @@ backendImageTag: 1.0.0-alpha.123880 # This value will be updated during the buil
 frontendImageTag: 1.0.0-alpha.123880 # This value will be updated during the build pipeline
 
 ingress: {}
+
+openAPIEnabled: false

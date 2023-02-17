@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: babelfish-backend
 data:
-  api_documentation_enabled: "true"
-  version: "1.2.3"
+  api_documentation_enabled: {{.Values.openAPIEnabled | quote}}
+  version: {{.Values.backendImageTag | quote}}

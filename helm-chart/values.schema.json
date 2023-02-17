@@ -5,7 +5,8 @@
     "imagePullSecret",
     "backendImageTag",
     "frontendImageTag",
-    "ingress"
+    "ingress",
+    "openAPIEnabled"
   ],
   "properties": {
     "imageRegistry": {
@@ -34,6 +35,9 @@
         }
       },
       "additionalProperties": false
+    },
+    "openAPIEnabled": {
+      "type": "boolean"
     }
   },
   "additionalProperties": false
