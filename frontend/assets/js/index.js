@@ -14,7 +14,7 @@ populateLanguageSelect(destinationLanguageSelect)
 textInput.oninput = onInput;
 textInput.onchange = onChange;
 
-updateOutput()
+onChange()
 
 // onInput is called after every key press. The currently edited sentence is therefore constantly changing and shouldn't
 // be translated. The current sentence is only translated if the user stops typing.
