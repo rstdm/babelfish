@@ -28,5 +28,8 @@ spec:
             requests:
               cpu: 200m
               memory: 550M
+          envFrom:
+            - configMapRef:
+                name: babelfish-backend
           ports:
             - containerPort: 8000

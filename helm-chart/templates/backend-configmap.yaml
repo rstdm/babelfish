@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: babelfish-backend
+data:
+  api_documentation_enabled: "true"
+  version: "1.2.3"
