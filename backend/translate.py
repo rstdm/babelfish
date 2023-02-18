@@ -6,9 +6,9 @@ from language import Language
 # load model and tokenizer.
 model_name = "Helsinki-NLP/opus-mt-ine-ine"
 print("loading tokenizer")  # this takes a few seconds...
-tokenizer = MarianTokenizer.from_pretrained(model_name)
+tokenizer = MarianTokenizer.from_pretrained(model_name, low_cpu_mem_usage=True)
 print("loading model")  # this takes a few seconds...
-model = MarianMTModel.from_pretrained(model_name)
+model = MarianMTModel.from_pretrained(model_name, low_cpu_mem_usage=True)
 
 # translating text is very cpu intensive (100% CPU utilization). Therefore, running multiple requests in parallel does
 # not improve performance. But running multiple translations in parallel consumes more memory and very few memory is
