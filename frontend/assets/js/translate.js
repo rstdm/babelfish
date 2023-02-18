@@ -24,19 +24,25 @@ async function translateSentence(sentence, dstLang, updateCacheCallback) {
         sourceText: sentence,
     }
 
-    const response = await fetch('/api/translate', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody),
-    });
+    let response = null;
+    while (true) { // The nginx proxy returns a 504 status code (Gateway Timeout) after the request has been pending for 60 seconds
+        response = await fetch('/api/translate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody),
+        });
 
-    if (response.status !== 200) {
-        const errorMessage = "Failed to retrieve translation from the server. URL: " + response.url +
+        if (response.status === 200) {
+            break
+        }
+
+        const errorMessage = "Failed to retrieve translation from the server. Retrying... URL: " + response.url +
             " Status: " + response.status + " Response Body: " + await response.text();
-        throw new Error(errorMessage)
+        console.log(errorMessage)
     }
+
     const responseBody = await response.json()
     let translatedSentence = responseBody.translatedText;
 
@@ -49,7 +55,6 @@ async function translateSentence(sentence, dstLang, updateCacheCallback) {
     setCachedSentence(sentence, translatedSentence, dstLang)
     updateCacheCallback()
 }
-
 
 
 export {getCachedSentence, translateSentence};
