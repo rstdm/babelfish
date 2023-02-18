@@ -15,6 +15,7 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+print(f'current server configuration: {settings.json()}')
 
 # Setting the openapi_url to an empty string disables the documentation
 # https://fastapi.tiangolo.com/advanced/conditional-openapi/
@@ -32,7 +33,6 @@ app = FastAPI(
 )
 
 if len(settings.cors_allowed_origins) > 0:  # CORS is needed for local debugging, but not in production
-    print(f'Allowing CORS for these origins: {settings.cors_allowed_origins}')
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_allowed_origins,
