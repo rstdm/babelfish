@@ -10,7 +10,7 @@ class IntegrationTest(unittest.TestCase):
 
     def test_translate(self):
         response = self.client.post(
-            "/translate",
+            "/api/translate",
             json={
                 'destinationLanguage': 'deu',
                 'sourceText': 'This is just a test.'
