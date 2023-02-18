@@ -41,6 +41,11 @@ async function translateSentence(sentence, dstLang, updateCacheCallback) {
         const errorMessage = "Failed to retrieve translation from the server. Retrying... URL: " + response.url +
             " Status: " + response.status + " Response Body: " + await response.text();
         console.log(errorMessage)
+
+        if (response.status === 502 || response.status === 503) { // Bad Gateway or Service Unavailable: babelfish-backend container is not running
+            // https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
+        await new Promise(r => setTimeout(r, 2000)); // wait for two seconds before retrying
+        }
     }
 
     const responseBody = await response.json()
