@@ -29,11 +29,13 @@
     </div>
 
     <div class="container mb-2"
-         style="border-style: solid; border-color: lightgray; border-width: 1px; border-radius: 10px; box-shadow: 0 0 10px lightgray; height: calc(max(5cm, 50vh))">
+         style="border-style: solid; border-color: lightgray; border-width: 1px; border-radius: 10px; box-shadow: 0 0 10px lightgray;">
 
-        <div class="row" style="height: 100%">
+        <div class="row" style="height: calc(max(5cm, 50vh))">
             <div class="col" style="border-right: lightgray 1px solid; height: 100%">
                 <textarea id="text-input" class="form-control py-0"
+                          minlength="0"
+                          maxlength="2000"
                           style="border: none; outline: none; box-shadow: none; resize: none; margin-top: 1em; margin-bottom: 1em; height: calc(100% - 2em);"
                           placeholder="Bitte Text eingeben. Die Sprache wird automatisch erkannt." autofocus></textarea>
             </div>
@@ -41,6 +43,13 @@
                 <!--white-space: pre-line preserves linebreaks: https://stackoverflow.com/questions/39325414/line-break-in-html-with-n-->
                 <div id="translation-output" style="white-space: pre-line; margin-top: 1em; margin-bottom: 1em; height: calc(100% - 2em); overflow: auto"></div>
             </div>
+        </div>
+
+        <div class="row">
+            <div class="col" style="border-right: lightgray 1px solid; color: gray; text-align: right">
+                <small><span id="text-input-char-counter">0</span> / 2000</small>
+            </div>
+            <div class="col"></div>
         </div>
 
     </div>

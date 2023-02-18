@@ -5,6 +5,7 @@ import {debounce} from "./debounce.js";
 
 const destinationLanguageSelect = document.getElementById("destination-language-select")
 const textInput = document.getElementById("text-input")
+const textInputCharCounter = document.getElementById("text-input-char-counter")
 const translationOutput = document.getElementById("translation-output")
 
 destinationLanguageSelect.onchange = onChange
@@ -19,6 +20,8 @@ onChange()
 // onInput is called after every key press. The currently edited sentence is therefore constantly changing and shouldn't
 // be translated. The current sentence is only translated if the user stops typing.
 function onInput() {
+    textInputCharCounter.innerText = textInput.value.length.toString()
+
     const destLang = getDestinationLanguage()
     const inputSentenceEntries = getInputSentences();
     for (const sentenceEntry of inputSentenceEntries) {
