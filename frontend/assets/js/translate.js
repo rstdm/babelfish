@@ -24,7 +24,7 @@ async function translateSentence(sentence, dstLang, updateCacheCallback) {
         sourceText: sentence,
     }
 
-    const response = await fetch('/translate', {
+    const response = await fetch('/api/translate', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

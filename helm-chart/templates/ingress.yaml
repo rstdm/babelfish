@@ -8,8 +8,8 @@ spec:
   - host: "{{.Values.ingress.host}}"
     http:
       paths:
-        - path: /translate
-          pathType: Exact
+        - path: /api
+          pathType: Prefix
           backend:
             service:
               name: babelfish-backend
