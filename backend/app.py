@@ -19,9 +19,11 @@ print(f'current server configuration: {settings.json()}')
 
 # Setting the openapi_url to an empty string disables the documentation
 # https://fastapi.tiangolo.com/advanced/conditional-openapi/
-openapi_url = "/openapi.json" if settings.api_documentation_enabled else ""
+openapi_url = "/api/openapi.json" if settings.api_documentation_enabled else ""
 app = FastAPI(
     openapi_url=openapi_url,
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
     title="babelfish-backend",
     description="This microservice is the backend of the babelfish application. It's only purpose is to translate text"
                 "between various languages.",
@@ -58,7 +60,7 @@ class TranslateResponsePayload(BaseModel):
     translatedText: str = Field(description="This field contains the translated text.")
 
 
-@app.post("/translate",
+@app.post("/api/translate",
           summary="Translates a text from one language to another.",
           description="This endpoint translates a text from one language to another. The translation is very slow for "
                       "long texts. It therefore makes sense to split longer documents into sentences and to create a "
