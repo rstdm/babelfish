@@ -1,14 +1,16 @@
-from transformers import MarianTokenizer, MarianMTModel
+import time
+
+#from transformers import MarianTokenizer, MarianMTModel
 from threading import Lock
 
 from language import Language
 
 # load model and tokenizer.
-model_name = "Helsinki-NLP/opus-mt-ine-ine"
-print("loading tokenizer")  # this takes a few seconds...
-tokenizer = MarianTokenizer.from_pretrained(model_name)
-print("loading model")  # this takes a few seconds...
-model = MarianMTModel.from_pretrained(model_name)
+#model_name = "Helsinki-NLP/opus-mt-ine-ine"
+#print("loading tokenizer")  # this takes a few seconds...
+#tokenizer = MarianTokenizer.from_pretrained(model_name)
+#print("loading model")  # this takes a few seconds...
+#model = MarianMTModel.from_pretrained(model_name)
 
 # translating text is very cpu intensive (100% CPU utilization). Therefore, running multiple requests in parallel does
 # not improve performance. But running multiple translations in parallel consumes more memory and very few memory is
@@ -23,7 +25,7 @@ def translate(destination_language: Language, source_text: str) -> str:
 
     mutex.acquire()
     try:
-        # Quoting the documentation at https://huggingface.co/docs/transformers/model_doc/marian#multilingual-models:
+        """# Quoting the documentation at https://huggingface.co/docs/transformers/model_doc/marian#multilingual-models:
         # "If a model can output multiple languages, and you should specify a language code by prepending the desired output
         # language to the src_text."
         # In my opinion this is a horrible idea, but I didn't create this model...
@@ -44,6 +46,11 @@ def translate(destination_language: Language, source_text: str) -> str:
         # max_new_tokens. This is the documentation:
         # https://huggingface.co/docs/transformers/v4.18.0/en/main_classes/text_generation#transformers.generation_utils.GenerationMixin.generate
         translated = model.generate(**tokens, max_length=512)
-        return tokenizer.decode(translated[0], skip_special_tokens=True)
+        return tokenizer.decode(translated[0], skip_special_tokens=True)"""
+
+        print(f"pretending to work on request: {source_text}")
+        time.sleep(2)
+        print(f"done working on request: {source_text}")
+        return "lorem ipsum"
     finally:
         mutex.release()
