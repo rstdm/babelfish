@@ -18,7 +18,7 @@ spec:
         - name: "{{.Values.imagePullSecret}}"
       containers:
         - name: babelfish-frontend
-          image: "{{.Values.imageRegistry}}/babelfish-frontend:{{.Values.frontendImageTag}}"
+          image: "{{.Values.imageRegistry}}/babelfish-frontend:{{.Values.frontendImageTag | default .Chart.AppVersion}}"
           resources:
             limits:
               cpu: 250m

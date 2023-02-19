@@ -20,7 +20,7 @@ spec:
         - name: "{{.Values.imagePullSecret}}"
       containers:
         - name: babelfish-backend
-          image: "{{.Values.imageRegistry}}/babelfish-backend:{{.Values.backendImageTag}}"
+          image: "{{.Values.imageRegistry}}/babelfish-backend:{{.Values.backendImageTag | default .Chart.AppVersion}}"
           resources:
             limits:
               cpu: '2'

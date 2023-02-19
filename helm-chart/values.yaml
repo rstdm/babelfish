@@ -1,7 +1,7 @@
 imageRegistry: git.mylab.th-luebeck.de:4181/cloud-native/ws2022-23/cloudprog-rene-maget
 
-backendImageTag: 1.0.0-alpha.123880 # This value will be updated during the build pipeline
-frontendImageTag: 1.0.0-alpha.123880 # This value will be updated during the build pipeline
+backendImageTag: "" # This value defaults to .Chart.AppVersion
+frontendImageTag: "" # This value defaults to .Chart.AppVersion
 
 ingress: {}
 

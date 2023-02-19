@@ -4,4 +4,4 @@ metadata:
   name: babelfish-backend
 data:
   api_documentation_enabled: {{.Values.openAPIEnabled | quote}}
-  version: {{.Values.backendImageTag | quote}}
+  version: {{.Values.backendImageTag | default .Chart.AppVersion | quote}}
