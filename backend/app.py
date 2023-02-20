@@ -59,8 +59,16 @@ class TranslateRequestPayload(BaseModel):
 class TranslateResponsePayload(BaseModel):
     translatedText: str = Field(description="This field contains the translated text.")
 
+    class Config:
+        schema_extra = {
+            "example": {
+                "translatedText": "Dieses englische Textsnippe wird in Deutsch übersetzt.",
+            }
+        }
+
 
 @app.post("/api/translate",
+          operation_id="translate",
           summary="Translates a text from one language to another.",
           description="This endpoint translates a text from one language to another. The translation is very slow for "
                       "long texts. It therefore makes sense to split longer documents into sentences and to create a "
