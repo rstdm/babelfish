@@ -21,7 +21,7 @@ secrets:
                     --docker-password=$CI_REGISTRY_TOKEN"
     needs: []
 
-unit-test:
+test:
     stage: test
     image: python:3.10-slim
     script:
