@@ -1,66 +1,80 @@
-# K8s Base Template
+# Babelfish
 
-Project Base Template for Kubernetes-based Projects
+![screenshot](screenshot.png)
 
-## Getting started
+Der Babelfish kann beliebig zwischen 82 Sprachen übersetzen, darunter Deutsch, Englisch, Französisch, Italienisch und Spanisch. Die zugehörige Website ist unter [babelfish-9323.edu.k8s.th-luebeck.dev](https://babelfish-9323.edu.k8s.th-luebeck.dev/) erreichbar. Die API-Dokumentation ist unter [babelfish-9323.edu.k8s.th-luebeck.dev/api/docs](https://babelfish-9323.edu.k8s.th-luebeck.dev/api/docs) einsehbar.
 
-To make it easy for you to get started with this template, here's a list of recommended next steps.
+Die Babelfish-Applikation besteht aus einem Frontend und einem Backend, die unabhängig voneinander in je einem eigenen Pod betrieben werden. Das Ziel dieser Aufteilung bestand darin, Frontend und Backend unabhängig voneinander skalieren zu können. Das Frontend wird von Nginx ausgeliefert, welches viele 100 Anfragen pro Sekunde beantworten kann. Das neuronale Netz im Backend kann dagegen nur zwischen 0,25 und zwei Anfragen pro Sekunde bearbeiten.
 
-Already a pro? Just edit this README.md and make it your own.
+Die angestrebte Skalierung mit einem HorizontalPodAutoscaler lässt sich auf dem bereitgestellten Cluster aufgrund der bestehenden Resource Quotas jedoch nicht realisieren: Es steht nicht genügend Arbeitsspeicher zur Verfügung, um zwei Instanzen des Backends zu erzeugen.
 
-## Where do you find what?
+## Aufbau des Repositories
 
-- `.gitlab-ci.yaml`: The deployment pipeline composed of `prepare`, `build` and `deployment` stages.
-- `deploy/`: K8s manifest files that deploy an out-of-the-box nginx server and a containerized Hello World Flask App.
-- `hello/`: A simple Hello World Python App (Flask-based). Take this as a base camp for own projects.
+### Frontend
 
-## Deploy
+Das Frontend besteht aus einer statischen Website, die von Nginx ausgeliefert wird. Der eingegebene Text wird in Echtzeit übersetzt.
 
-Just start a new [deployment pipeline](../../../-/pipelines/new) to deploy
+Hierzu wird der Text in Sätze aufgeteilt, die unabhängig voneinander zur Übersetzung an das Backend geschickt werden. Hierdurch kann der erste Satz bereits übersetzt werden, während der Anwender noch den zweiten Satz eintippt. Außerdem kann der Load Balancer die Arbeitslast bei vielen kleinen Anfragen gleichmäßiger auf die verfügbaren Pods verteilen als bei wenigen großen.
 
-- the example `hello` service and 
-- a default `nginx` HTTP service.
+Um serverseitig Ressourcen zu sparen, werden die bereits übersetzten Sätze clientseitig gecached. Dies ist beispielsweise hilfreich, wenn ein Nutzer eine Änderung vornimmt, die er gleich darauf wieder rückgängig macht. Der betroffene Satz muss dann nicht erneut übersetzt werden und dem Nutzer kann sofort die richtige Übersetzung aus dem Cache angezeigt werden.
 
-The pipeline is already prepared for automatic deployments. Feel free to adapt it according to your needs.
+### Backend
 
-## Configure `kubectl` or `Lens`
+Das Backend ist in Python geschrieben und nutzt das FastAPI-Framework. Die Übersetzung wird von Hugging Face und Transformers in Kombination mit dem [Helsinki-NLP/opus-mt-ine-ine](https://huggingface.co/Helsinki-NLP/opus-mt-ine-ine) Modell durchgeführt.
 
-You find your `KUBECONFIG` in Gitlab under Settings -> [VARIABLES](../../../-/settings/ci_cd).
-Copy it and import it into [Lens](https://k8slens.dev) or set it as an environment variable on your local system.
+Die übersetzten Sätze werden serverseitig nicht gecached, da es angesichts der hohen Anzahl unterstützter Sprachen und der praktisch unendlichen Anzahl möglicher Sätze äußerst unwahrscheinlich ist, dass zwei Nutzer exakt den selben Satz eingeben.
 
-You have then access to your connected Kubernetes namespace via `kubectl` or the Lens IDE.
+Es ist dagegen sehr wahrscheinlich, dass ein Nutzer zweimal den selben Satz eingibt, z.B. wenn er eine Änderung im Text rückgängig macht. Dieser Satz muss dann nicht erneut übersetzt werden, da das Frontend einen clientseitigen Cache betreibt.
 
-```bash
-kubectl get svc
-# Should return nginx and hello service
+### Helm Chart
+
+Das Helm Chart wurde erstellt, da für die Installation auf einem beliebigen Kubernetes-Cluster einige individuelle Informationen benötigt werden, die nicht Teil der Applikation sein können. Helm ist ein etabliertes Tool, um Kubernetes-Resourcen zu paketieren und Templates zu rendern.
+
+Das Helm Chart enthält einen Ingress, und je ein Deployment und einen Service für das Backend und Frontend. Das Backend wird zudem über eine eigene ConfigMap konfiguriert.
+
+Folgende Values können gesetzt werden (die gesetzten Werte sind die default-Werte):
+
+```yaml
+imageRegistry: git.mylab.th-luebeck.de:4181/cloud-native/ws2022-23/cloudprog-rene-maget
+
+imgePullSecret: "" # mandatory
+
+backendImageTag: "" # optional
+frontendImageTag: "" # optional
+
+openAPIEnabled: false
+
+ingress:
+	host: "" # mandatory
+	annotations: {} # optional
 ```
 
-```bash
-kubectl get pod
-# Should return 3 nginx pods and one hello pod
-```
+Normalerweise besteht kein Grund für Nutzer, die `imageRegistry` zu ändern. Dies könnte höchstens erforderlich sein, wenn der Cluster (z.B. wegen einer Firewall) die Image Registry nicht erreichen kann und der Nutzer die Images deswegen zuvor manuell in eine andere Registry kopiert.
 
-You can forward service ports to your local system using `kubectl port-forward`
+`imagePullSecret` verweist auf das ImagePullSecret, dass die Zugangsdaten für die `imageRegistry` enthält. Das ImagePullSecret muss zuvor manuell angelegt werden.
 
-```bash
-kubectl port-forward svc/hello 8080:80
-```
+Der Nutzer sollte niemals selbst `backendImageTag` und `frontendImageTag` setzen müssen. Wenn die Werte ungesetzt sind, wird auf `.Chart.AppVersion` zurückgegriffen.  Die Values existieren, da das Helm Chart in der Pipeline ohne vorher paketiert worden zu sein mit `--set-string backendImageTag=1.2.3` installiert wird. Bei der Paketierung wird dagegen die AppVersion mit `--app-version 1.2.3` gesetzt, sodass sie der Nutzer des Pakets nicht setzen muss. Das Helm Chart wird momentan nicht in der Pipeline paketiert.
 
-You can than access the hello service on 
+`openAPIEnabled` bestimmt, ob die OpenAPI-Dokumentation unter [babelfish-9323.edu.k8s.th-luebeck.dev/api/docs](https://babelfish-9323.edu.k8s.th-luebeck.dev/api/docs) ausgeliefert wird. Die Dokumentation ist per Voreinstellung deaktiviert, da es keinen Grund gibt, sie im Produktivbetrieb bereitzustellen.
 
-- [http://localhost:8080](http://localhost:8080)
-- or [http://localhost:8080/greet/es](http://localhost:8080/greet/es)
+`ingress.host` bestimmt, unter welchem Hostnamen die Anwendung später erreichbar sein soll. Die unter `ingress.annotations` eingefügten Key-Value-Paare werden der Annotation des Ingress hinzugefügt. Sie können verwendet werden, um nicht standardisierte Ingress Controller spezifische Konfigurationen (z.B. für Zertifikate) vorzunehmen.
+
+Ein fertiges Helm Chart, dass an einen Nutzer ausgeliefert werden könnte, kann mit `helm package --app-version 1.0.0-alpha.124341 helm-chart/` gebaut werden. Das gepackte Helm Chart kann dann mit diesem Befehl installiert werden:
 
 ```bash
-kubectl port-forward svc/nginx 8181:80
+helm install --set-string "imagePullSecret=babelfish-image-pull-secret,ingress.host=babelfish-9323.edu.k8s.th-luebeck.dev" --set-json 'ingress.annotations={"cert-manager.io/cluster-issuer":"letsencrypt","acme.cert-manager.io/http01-edit-in-place":"true"}' babelfish babelfish-0.0.1.tgz
 ```
 
-- Access the nginx HTTP server via [http://localhost:8181](http://localhost:8181)
+Alternativ kann das Helm Chart auch installiert werden, ohne vorher gepackt zu werden. Dieses Vorgehen wird auch in der Pipeline verwendet.
 
-You can also use the port-forwarding features from the Lens-UI.
+```bash
+helm install --set-string "imagePullSecret=babelfish-image-pull-secret,backendImageTag=1.0.0-alpha.124341,frontendImageTag=1.0.0-alpha.124341,ingress.host=babelfish-9323.edu.k8s.th-luebeck.dev" --set-json 'ingress.annotations={"cert-manager.io/cluster-issuer":"letsencrypt","acme.cert-manager.io/http01-edit-in-place":"true"}' babelfish helm-chart/
+```
 
-## Adapt
+### .gitlab-ci.yml
 
-You are now ready to use this repo as a base camp for your project.
+Die GitLab-Pipeline erstellt das Image Pull Secret, führt Unit- und Integrationtests aus, baut die für die Applikation benötigten Docker Images und installiert die Anwendung auf dem Kubernetes-Cluster. Abgesehen vom Installationsjob laufen alle Jobs parallel, da sie keine Abhängigkeiten voneinander haben. Die Installation setzt jedoch voraus, dass zuvor die Docker Images gebaut und das Image Pull Secret erstellt wurden.
 
-Code strong!
+Die Pipeline verwendet wo immer möglich Caching, um die Ausführungsgeschwindigkeit zu erhöhen.
+
+Da nur ein Namespace zur Verfügung steht, ist es nicht sinnvoll, eine Entwicklungs- und eine Produktivumgebung der Anwendung zu installieren. Aus diesem Grund berücksichtigt die Pipeline auch kein Gitflow, GitHub Flow, Trunk-basierte Entwicklung, etc.
