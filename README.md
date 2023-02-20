@@ -45,8 +45,8 @@ frontendImageTag: "" # optional
 openAPIEnabled: false
 
 ingress:
-	host: "" # mandatory
-	annotations: {} # optional
+    host: "" # mandatory
+    annotations: {} # optional
 ```
 
 Normalerweise besteht kein Grund für Nutzer, die `imageRegistry` zu ändern. Dies könnte höchstens erforderlich sein, wenn der Cluster (z.B. wegen einer Firewall) die Image Registry nicht erreichen kann und der Nutzer die Images deswegen zuvor manuell in eine andere Registry kopiert.
