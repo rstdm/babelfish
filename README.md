@@ -14,7 +14,7 @@ Die angestrebte Skalierung mit einem HorizontalPodAutoscaler lässt sich auf dem
 
 Das Frontend besteht aus einer statischen Website, die von Nginx ausgeliefert wird. Der eingegebene Text wird in Echtzeit übersetzt.
 
-Hierzu wird der Text in Sätze aufgeteilt, die unabhängig voneinander zur Übersetzung an das Backend geschickt werden. Hierdurch kann der erste Satz bereits übersetzt werden, während der Anwender noch den zweiten Satz eintippt. Außerdem kann der Load Balancer die Arbeitslast bei vielen kleinen Anfragen gleichmäßiger auf die verfügbaren Pods verteilen als bei wenigen großen.
+Hierzu wird der Text in Sätze aufgeteilt, die unabhängig voneinander zur Übersetzung an das Backend geschickt werden. Hierdurch kann der erste Satz bereits übersetzt werden, während der Anwender noch den zweiten Satz eintippt. Außerdem kann der Load Balancer die Arbeitslast bei vielen kleinen Anfragen (einzelne Sätze) gleichmäßiger auf die verfügbaren Pods verteilen als bei wenigen großen (ganzer Text).
 
 Um serverseitig Ressourcen zu sparen, werden die bereits übersetzten Sätze clientseitig gecached. Dies ist beispielsweise hilfreich, wenn ein Nutzer eine Änderung vornimmt, die er gleich darauf wieder rückgängig macht. Der betroffene Satz muss dann nicht erneut übersetzt werden und dem Nutzer kann sofort die richtige Übersetzung aus dem Cache angezeigt werden.
 
@@ -28,7 +28,7 @@ Es ist dagegen sehr wahrscheinlich, dass ein Nutzer zweimal den selben Satz eing
 
 ### Helm Chart
 
-Das Helm Chart wurde erstellt, da für die Installation auf einem beliebigen Kubernetes-Cluster einige individuelle Informationen benötigt werden, die nicht Teil der Applikation sein können. Helm ist ein etabliertes Tool, um Kubernetes-Resourcen zu paketieren und Templates zu rendern.
+Das Helm Chart wurde erstellt, da für die Installation auf einem beliebigen Kubernetes-Cluster einige individuelle Informationen benötigt werden, die nicht Teil der Applikation sein können. Helm ist ein etabliertes Tool, um Kubernetes-Resourcen zu packen und Templates zu rendern.
 
 Das Helm Chart enthält einen Ingress, und je ein Deployment und einen Service für das Backend und Frontend. Das Backend wird zudem über eine eigene ConfigMap konfiguriert.
 
@@ -53,7 +53,7 @@ Normalerweise besteht kein Grund für Nutzer, die `imageRegistry` zu ändern. Di
 
 `imagePullSecret` verweist auf das ImagePullSecret, dass die Zugangsdaten für die `imageRegistry` enthält. Das ImagePullSecret muss zuvor manuell angelegt werden.
 
-Der Nutzer sollte niemals selbst `backendImageTag` und `frontendImageTag` setzen müssen. Wenn die Werte ungesetzt sind, wird auf `.Chart.AppVersion` zurückgegriffen.  Die Values existieren, da das Helm Chart in der Pipeline ohne vorher paketiert worden zu sein mit `--set-string backendImageTag=1.2.3` installiert wird. Bei der Paketierung wird dagegen die AppVersion mit `--app-version 1.2.3` gesetzt, sodass sie der Nutzer des Pakets nicht setzen muss. Das Helm Chart wird momentan nicht in der Pipeline paketiert.
+Der Nutzer sollte niemals selbst `backendImageTag` und `frontendImageTag` setzen müssen. Wenn die Werte ungesetzt sind, wird auf `.Chart.AppVersion` zurückgegriffen.  Die Values existieren, da das Helm Chart in der Pipeline ohne vorher gepackt worden zu sein mit `--set-string backendImageTag=1.2.3` installiert wird. Beim Packen wird dagegen die AppVersion mit `--app-version 1.2.3` gesetzt, sodass sie der Nutzer des Pakets nicht setzen muss. Das Helm Chart wird momentan nicht in der Pipeline gepackt.
 
 `openAPIEnabled` bestimmt, ob die OpenAPI-Dokumentation unter [babelfish-9323.edu.k8s.th-luebeck.dev/api/docs](https://babelfish-9323.edu.k8s.th-luebeck.dev/api/docs) ausgeliefert wird. Die Dokumentation ist per Voreinstellung deaktiviert, da es keinen Grund gibt, sie im Produktivbetrieb bereitzustellen.
 
@@ -73,7 +73,7 @@ helm install --set-string "imagePullSecret=babelfish-image-pull-secret,backendIm
 
 ### .gitlab-ci.yml
 
-Die GitLab-Pipeline erstellt das Image Pull Secret, führt Unit- und Integrationtests aus, baut die für die Applikation benötigten Docker Images und installiert die Anwendung auf dem Kubernetes-Cluster. Abgesehen vom Installationsjob laufen alle Jobs parallel, da sie keine Abhängigkeiten voneinander haben. Die Installation setzt jedoch voraus, dass zuvor die Docker Images gebaut und das Image Pull Secret erstellt wurden.
+Die GitLab-Pipeline erstellt das Image Pull Secret, führt Unit- und Integrationtests aus, baut die für die Applikation benötigten Docker Images und installiert die Anwendung auf dem Kubernetes-Cluster. Abgesehen vom Installationsjob laufen alle Jobs parallel, da sie keine Abhängigkeiten voneinander haben. Die Installation setzt jedoch voraus, dass zuvor die Docker Images gebaut und das Image Pull Secret erstellt wurde.
 
 Die Pipeline verwendet wo immer möglich Caching, um die Ausführungsgeschwindigkeit zu erhöhen.
 
