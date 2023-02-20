@@ -20,7 +20,7 @@ Um serverseitig Ressourcen zu sparen, werden die bereits übersetzten Sätze cli
 
 ### Backend
 
-Das Backend ist in Python geschrieben und nutzt das FastAPI-Framework. Die Übersetzung wird von Hugging Face und Transformers in Kombination mit dem [Helsinki-NLP/opus-mt-ine-ine](https://huggingface.co/Helsinki-NLP/opus-mt-ine-ine) Modell durchgeführt.
+Das Backend ist in Python geschrieben und nutzt das FastAPI-Framework. Die Übersetzung wird von Hugging Face und Transformers in Kombination mit dem [Helsinki-NLP/opus-mt-ine-ine](https://huggingface.co/Helsinki-NLP/opus-mt-ine-ine) Modell durchgeführt. [Helsinki-NLP/opus-mt-ine-ine](https://huggingface.co/Helsinki-NLP/opus-mt-ine-ine) ist neben der [facebook/m2m100-Familie](https://huggingface.co/facebook/m2m100_418M) das einzige funktionierende und auf Huggingface verfügbare Modell, dass alle geforderten fünf Sprachen unterstützt. Facebooks / Metas Modelle erzielen zwar bessere Ergebnisse, benötigen aber mehr RAM als auf dem bereitgestelltem Kubernetes-Cluster verfügbar ist.
 
 Die übersetzten Sätze werden serverseitig nicht gecached, da es angesichts der hohen Anzahl unterstützter Sprachen und der praktisch unendlichen Anzahl möglicher Sätze äußerst unwahrscheinlich ist, dass zwei Nutzer exakt den selben Satz eingeben.
 
@@ -77,4 +77,4 @@ Die GitLab-Pipeline erstellt das Image Pull Secret, führt Unit- und Integration
 
 Die Pipeline verwendet wo immer möglich Caching, um die Ausführungsgeschwindigkeit zu erhöhen.
 
-Da nur ein Namespace zur Verfügung steht, ist es nicht sinnvoll, eine Entwicklungs- und eine Produktivumgebung der Anwendung zu installieren. Aus diesem Grund berücksichtigt die Pipeline auch kein Gitflow, GitHub Flow, Trunk-basierte Entwicklung, etc.
+Da nur ein Namespace zur Verfügung steht, ist es nicht sinnvoll, eine Entwicklungs- und eine Produktivumgebung der Anwendung zu installieren. Aus diesem Grund berücksichtigt die Pipeline auch kein Gitflow, GitHub Flow, Trunk-basierte Entwicklung, etc. Die Pipeline erzeugt stattdessen unabhängig vom jeweiligen Branch eine Testinstallation und überschreibt dabei den letzten Release.
