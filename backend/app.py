@@ -25,7 +25,7 @@ app = FastAPI(
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     title="babelfish-backend",
-    description="This microservice is the backend of the babelfish application. It's only purpose is to translate text"
+    description="This microservice is the backend of the babelfish application. It's only purpose is to translate text "
                 "between various languages.",
     version=settings.version,
     contact={
