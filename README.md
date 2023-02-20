@@ -1,4 +1,4 @@
-# Babelfish
+﻿# Babelfish
 
 ![screenshot](screenshot.png)
 
@@ -8,7 +8,7 @@ Die Babelfish-Applikation besteht aus einem Frontend und einem Backend, die unab
 
 Die angestrebte Skalierung mit einem HorizontalPodAutoscaler lässt sich auf dem bereitgestellten Cluster aufgrund der bestehenden Resource Quotas jedoch nicht realisieren: Es steht nicht genügend Arbeitsspeicher zur Verfügung, um zwei Instanzen des Backends zu erzeugen.
 
-## Aufbau des Repositories
+## Aufbau des Repositorys
 
 ### Frontend
 
@@ -16,13 +16,13 @@ Das Frontend besteht aus einer statischen Website, die von Nginx ausgeliefert wi
 
 Hierzu wird der Text in Sätze aufgeteilt, die unabhängig voneinander zur Übersetzung an das Backend geschickt werden. Hierdurch kann der erste Satz bereits übersetzt werden, während der Anwender noch den zweiten Satz eintippt. Außerdem kann der Load Balancer die Arbeitslast bei vielen kleinen Anfragen (einzelne Sätze) gleichmäßiger auf die verfügbaren Pods verteilen als bei wenigen großen (ganzer Text).
 
-Um serverseitig Ressourcen zu sparen, werden die bereits übersetzten Sätze clientseitig gecached. Dies ist beispielsweise hilfreich, wenn ein Nutzer eine Änderung vornimmt, die er gleich darauf wieder rückgängig macht. Der betroffene Satz muss dann nicht erneut übersetzt werden und dem Nutzer kann sofort die richtige Übersetzung aus dem Cache angezeigt werden.
+Um serverseitig Ressourcen zu sparen, werden die bereits übersetzten Sätze clientseitig gecacht. Dies ist beispielsweise hilfreich, wenn ein Nutzer eine Änderung vornimmt, die er gleich darauf wieder rückgängig macht. Der betroffene Satz muss dann nicht erneut übersetzt werden und dem Nutzer kann sofort die richtige Übersetzung aus dem Cache angezeigt werden.
 
 ### Backend
 
 Das Backend ist in Python geschrieben und nutzt das FastAPI-Framework. Die Übersetzung wird von Hugging Face und Transformers in Kombination mit dem [Helsinki-NLP/opus-mt-ine-ine](https://huggingface.co/Helsinki-NLP/opus-mt-ine-ine) Modell durchgeführt. [Helsinki-NLP/opus-mt-ine-ine](https://huggingface.co/Helsinki-NLP/opus-mt-ine-ine) ist neben der [facebook/m2m100-Familie](https://huggingface.co/facebook/m2m100_418M) das einzige funktionierende und auf Huggingface verfügbare Modell, dass alle geforderten fünf Sprachen unterstützt. Facebooks / Metas Modelle erzielen zwar bessere Ergebnisse, benötigen aber mehr RAM als auf dem bereitgestelltem Kubernetes-Cluster verfügbar ist.
 
-Die übersetzten Sätze werden serverseitig nicht gecached, da es angesichts der hohen Anzahl unterstützter Sprachen und der praktisch unendlichen Anzahl möglicher Sätze äußerst unwahrscheinlich ist, dass zwei Nutzer exakt den selben Satz eingeben.
+Die übersetzten Sätze werden serverseitig nicht gecacht, da es angesichts der hohen Anzahl unterstützter Sprachen und der praktisch unendlichen Anzahl möglicher Sätze äußerst unwahrscheinlich ist, dass zwei Nutzer exakt den selben Satz eingeben.
 
 Es ist dagegen sehr wahrscheinlich, dass ein Nutzer zweimal den selben Satz eingibt, z.B. wenn er eine Änderung im Text rückgängig macht. Dieser Satz muss dann nicht erneut übersetzt werden, da das Frontend einen clientseitigen Cache betreibt.
 
@@ -53,7 +53,7 @@ Normalerweise besteht kein Grund für Nutzer, die `imageRegistry` zu ändern. Di
 
 `imagePullSecret` verweist auf das ImagePullSecret, dass die Zugangsdaten für die `imageRegistry` enthält. Das ImagePullSecret muss zuvor manuell angelegt werden.
 
-Der Nutzer sollte niemals selbst `backendImageTag` und `frontendImageTag` setzen müssen. Wenn die Werte ungesetzt sind, wird auf `.Chart.AppVersion` zurückgegriffen.  Die Values existieren, da das Helm Chart in der Pipeline ohne vorher gepackt worden zu sein mit `--set-string backendImageTag=1.2.3` installiert wird. Beim Packen wird dagegen die AppVersion mit `--app-version 1.2.3` gesetzt, sodass sie der Nutzer des Pakets nicht setzen muss. Das Helm Chart wird momentan nicht in der Pipeline gepackt.
+Der Nutzer sollte niemals selbst `backendImageTag` und `frontendImageTag` setzen müssen. Wenn die Werte ungesetzt sind, wird auf `.Chart.AppVersion` zurückgegriffen. Die Values existieren, da das Helm Chart in der Pipeline ohne vorher gepackt worden zu sein mit `--set-string backendImageTag=1.2.3` installiert wird. Beim Packen wird dagegen die AppVersion mit `--app-version 1.2.3` gesetzt, sodass sie der Nutzer des Pakets nicht setzen muss. Das Helm Chart wird momentan nicht in der Pipeline gepackt.
 
 `openAPIEnabled` bestimmt, ob die OpenAPI-Dokumentation unter [babelfish-9323.edu.k8s.th-luebeck.dev/api/docs](https://babelfish-9323.edu.k8s.th-luebeck.dev/api/docs) ausgeliefert wird. Die Dokumentation ist per Voreinstellung deaktiviert, da es keinen Grund gibt, sie im Produktivbetrieb bereitzustellen.
 
