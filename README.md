@@ -2,11 +2,9 @@
 
 ![screenshot](screenshot.png)
 
-Der Babelfish kann beliebig zwischen 82 Sprachen übersetzen, darunter Deutsch, Englisch, Französisch, Italienisch und Spanisch. Die zugehörige Website ist unter [babelfish-9323.edu.k8s.th-luebeck.dev](https://babelfish-9323.edu.k8s.th-luebeck.dev/) erreichbar. Die API-Dokumentation ist unter [babelfish-9323.edu.k8s.th-luebeck.dev/api/docs](https://babelfish-9323.edu.k8s.th-luebeck.dev/api/docs) einsehbar.
+Babelfish ist eine cloud-native Anwendung zur Übersetzung von Text in 82 verschiedenen Sprachen und orientiert sich an bereits existierenden Anwendungen (z.B. Google Translator, DeepL). Die Anwendung basiert auf mehreren Microservices, die auf Kubernetes betrieben werden.
 
 Die Babelfish-Applikation besteht aus einem Frontend und einem Backend, die unabhängig voneinander in je einem eigenen Pod betrieben werden. Das Ziel dieser Aufteilung bestand darin, Frontend und Backend unabhängig voneinander skalieren zu können. Das Frontend wird von Nginx ausgeliefert, welches viele 100 Anfragen pro Sekunde beantworten kann. Das neuronale Netz im Backend kann dagegen nur zwischen 0,25 und zwei Anfragen pro Sekunde bearbeiten.
-
-Die angestrebte Skalierung mit einem HorizontalPodAutoscaler lässt sich auf dem bereitgestellten Cluster aufgrund der bestehenden Resource Quotas jedoch nicht realisieren: Es steht nicht genügend Arbeitsspeicher zur Verfügung, um zwei Instanzen des Backends zu erzeugen.
 
 ## Aufbau des Repositorys
 
